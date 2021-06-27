@@ -1,4 +1,4 @@
-package com.gtr;
+package com.guessthatreceipt;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

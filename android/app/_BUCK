@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.gtr",
+    package = "com.guessthatreceipt",
 )
 
 android_resource(
     name = "res",
-    package = "com.gtr",
+    package = "com.guessthatreceipt",
     res = "src/main/res",
 )
 
