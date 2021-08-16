@@ -1,4 +1,4 @@
-package com.guessthatreceipt;
+package com.guessthatrec;
 //paypal
 // import com.reactlibrary.RNPaypalPackage;
 import android.app.Application;

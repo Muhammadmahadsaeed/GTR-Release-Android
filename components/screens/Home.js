@@ -6,19 +6,24 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
-  ScrollView,
+  ScrollView, ActivityIndicator
 } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import { strTime, setCurrentDate } from './CommonComponents/DateTime';
+import WinnerList from './WinnerList';
 // import firebase from 'react-native-firebase';
-
+const moment = require('moment')
 class Home extends Component {
   constructor() {
     super();
     this.state = {
       flashMessage: false,
-      package: '',
+      data: '',
+      winner: '',
+      isLoading: true,
+      pkgLoading: false
     };
   }
 
@@ -26,11 +31,33 @@ class Home extends Component {
     // this.checkPermission();
     // this.createChannel();
     // this.notificationListener();
-    if(this.props.user.user.user.user_details.role_id != "3"){
+    this.getWinner()
+    if (this.props.user.user.user.user_details.role_id != "3") {
       this.getPackage();
     }
-    
+
   }
+
+  getWinner = async () => {
+    await fetch(
+      'https://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.props.user.user.user.access_token}`,
+        },
+      },
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        this.setState({ winner: result.data, isLoading: false });
+      })
+      .catch((err) => {
+        this.setState({ isLoading: false })
+        console.log(err);
+      });
+  }
+
   async getPackage() {
     await fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
       method: 'POST',
@@ -41,10 +68,11 @@ class Home extends Component {
     })
       .then((response) => response.json())
       .then((result) => {
-        this.setState({ package: result.data });
+        this.setState({ data: result.data, isLoading: false });
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => this.setState({ isLoading: false }));
   }
+
   // async getToken() {
   //   const firebaseToken = await firebase.messaging().getToken();
 
@@ -94,284 +122,252 @@ class Home extends Component {
   //     // }
   //   });
   // };
+
   checkPackage() {
-    if(this.props.user.user.user.user_details.role_id != "3"){
-    fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.props.user.user.user.access_token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result.data)
-        if (result.data === "Unauthenticated.") {
-          this.setState({ flashMessage: true }, () => {
-            setTimeout(() => this.closeFlashMessage(), 3000);
-          });
-        }
-        else {
-          this.props.navigation.navigate('DailyChallenges');
-        }
+    const role = this.props.user.user.user.user_details.role_id
+    if (role != "3") {
+      this.setState({ pkgLoading: true })
+      fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.props.user.user.user.access_token}`,
+          'Content-Type': 'application/json',
+        },
       })
-      .catch((error) => console.log('error', error));
+        .then((response) => response.json())
+        .then((result) => {
+          this.setState({ pkgLoading: false })
+          if (result.data == "Unauthenticated." || result.data.exp_status == "expired") {
+            this.setState({ flashMessage: true }, () => {
+              setTimeout(() => this.closeFlashMessage(), 3000);
+            });
+          }
+          else {
+            this.props.navigation.navigate('DailyChallenges');
+          }
+        })
+        .catch((error) => console.log('error', error));
     }
-    else{
+    else {
       this.props.navigation.navigate('DailyChallenges');
     }
   }
+
   closeFlashMessage() {
     this.setState({
       flashMessage: false,
     });
   }
-  render() {
 
+  moveToWinnerList = () => {
+    this.props.navigation.navigate('winnerList')
+  }
+
+  moveToPaymentScreen = () => {
+
+    this.props.navigation.navigate('payitforward')
+  }
+  render() {
+    const { data, winner, isLoading, pkgLoading } = this.state
+    const role = this.props.user.user.user.user_details.role_id
     return (
       <SafeAreaView style={styles.MainContainer} forceInset={{ top: 'always' }}>
-        <View style={{ flex: 1 }}>
-          <ScrollView style={[styles.body, { flex: 1 }]}>
-            <View style={styles.challengeView}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.challengeViewHeading}>LIVE GAME SHOW</Text>
-                <Text style={styles.challengeViewPara}>
-                  Anyone can particapte in this game show and can earn reward.
-                </Text>
-              </View>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'flex-end',
-                }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    this.checkPackage();
-                  }}>
-                  <Text style={styles.challengeViewTextView}>View</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.boxes}>
-              <TouchableOpacity activeOpacity={0.8} onPress={() => {
-                this.checkPackage();
-              }}
-                style={[
-                  styles.bigBox,
-                  { justifyContent: 'center', alignItems: 'center' },
-                ]}>
-                <Text
+        {isLoading ?
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size={60} color="#81b840" />
+          </View>
+          :
+          <View style={{ flex: 1 }}>
+            <ScrollView style={[styles.body, { flex: 1 }]}>
+              <View style={styles.challengeView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.challengeViewHeading}>LIVE GAME SHOW</Text>
+                  <Text style={styles.challengeViewPara}>
+                    Anyone can particapte in this game show and can earn reward.
+                  </Text>
+                </View>
+                <View
                   style={{
-                    fontSize: 50,
-                    fontFamily: 'Montserrat-ExtraBold',
-                    color: 'white',
+                    justifyContent: 'center',
+                    alignItems: 'flex-end',
+
                   }}>
-                  GTR
-                </Text>
-              </TouchableOpacity>
-              <View style={[styles.smallBox, { justifyContent: 'center' }]}>
-                <View style={{ marginLeft: 15 }}>
-                  <Text
-                    style={{ fontFamily: 'Montserrat-Bold', color: 'white' }}>
-                    Date
-                  </Text>
+                  <TouchableOpacity style={{ flexDirection: 'row', paddingVertical: 5 }}
+                    onPress={() => {
+                      this.checkPackage();
+                    }}>
+                    <Text style={styles.challengeViewTextView}>View</Text>
+                    {pkgLoading && <ActivityIndicator size="small" color="#81b840" />}
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.boxes}>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => {
+                  this.checkPackage();
+                }}
+                  style={[
+                    styles.bigBox,
+                    { justifyContent: 'center', alignItems: 'center' },
+                  ]}>
                   <Text
                     style={{
-                      fontFamily: 'Montserrat-Regular',
+                      fontSize: 50,
+                      fontFamily: 'Montserrat-ExtraBold',
                       color: 'white',
                     }}>
-                    {setCurrentDate}
+                    GTR
                   </Text>
-                </View>
-                <View style={{ marginTop: 15, marginLeft: 15 }}>
-                  <Text
-                    style={{ fontFamily: 'Montserrat-Bold', color: 'white' }}>
-                    Time
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: 'Montserrat-Regular',
-                      color: 'white',
-                    }}>
-                    {strTime}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View style={styles.challengeView}>
-              <View>
-                <Text style={styles.challengeViewHeading}>
-                  WINNERS OF THE DAY
-                </Text>
-                <Text style={styles.challengeViewPara}>
-                  Daily winner list availble with past record
-                </Text>
-              </View>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'flex-end',
-                }}>
-                <TouchableOpacity>
-                  <Text style={styles.challengeViewTextView}>View</Text>
                 </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.boxes}>
-              <View
-                style={[
-                  styles.smallBox,
-                  { justifyContent: 'center', alignItems: 'center' },
-                ]}>
-                <Image
-                  source={require('../../assets/cupIcon.png')}
-                  style={styles.userIcon}
-                />
-              </View>
-              <View style={[styles.bigBox, { padding: 10 }]}>
-                <View style={{ flexDirection: 'row' }}>
-                  <View
-                    style={{
-                      height: 40,
-                      width: 40,
-                      borderRadius: 50,
-                      borderColor: 'white',
-                      borderWidth: 2,
-                    }}>
-                    <Image
-                      source={require('../../assets/dummy.png')}
-                      style={{
-                        height: '100%',
-                        width: '100%',
-                        resizeMode: 'cover',
-                      }}
-                    />
-                  </View>
-
-                  <View style={{ marginLeft: 5, justifyContent: 'center' }}>
+                <View style={[styles.smallBox, { justifyContent: 'center' }]}>
+                  <View style={{ marginLeft: 15 }}>
+                    <Text
+                      style={{ fontFamily: 'Montserrat-Bold', color: 'white' }}>
+                      Date
+                    </Text>
                     <Text
                       style={{
-                        fontFamily: 'Montserrat-Bold',
+                        fontFamily: 'Montserrat-Regular',
                         color: 'white',
                       }}>
-                      Ertugal Gazi
-                    </Text>
-                    <Text style={[styles.challengeViewPara, { color: 'white' }]}>
-                      lorum about react
+                      {setCurrentDate}
                     </Text>
                   </View>
-                </View>
-                <View style={styles.seperator}></View>
-                <View style={{ flexDirection: 'row' }}>
-                  <View
-                    style={{
-                      height: 40,
-                      width: 40,
-                      borderRadius: 50,
-                      borderColor: 'white',
-                      borderWidth: 2,
-                    }}>
-                    <Image
-                      source={require('../../assets/dummy.png')}
-                      style={{
-                        height: '100%',
-                        width: '100%',
-                        resizeMode: 'cover',
-                      }}
-                    />
-                  </View>
-
-                  <View style={{ marginLeft: 5, justifyContent: 'center' }}>
+                  <View style={{ marginTop: 15, marginLeft: 15 }}>
+                    <Text
+                      style={{ fontFamily: 'Montserrat-Bold', color: 'white' }}>
+                      Time
+                    </Text>
                     <Text
                       style={{
-                        fontFamily: 'Montserrat-Bold',
+                        fontFamily: 'Montserrat-Regular',
                         color: 'white',
                       }}>
-                      Ertugal Gazi
-                    </Text>
-                    <Text style={[styles.challengeViewPara, { color: 'white' }]}>
-                      lorum about react
+                      {strTime}
                     </Text>
                   </View>
                 </View>
               </View>
-            </View>
-            <View style={styles.challengeView}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.challengeViewHeading}>PAY IT FORWORD</Text>
-                <Text style={styles.challengeViewPara}>
-                  PIF here you can pay for others this way many people can play this game
-                </Text>
+              <View style={styles.challengeView}>
+                <View>
+                  <Text style={styles.challengeViewHeading}>
+                    WINNERS OF THE DAY
+                  </Text>
+                  <Text style={styles.challengeViewPara}>
+                    Daily winner list availble with past record
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'flex-end',
+                  }}>
+                  <TouchableOpacity style={{ paddingVertical: 10, paddingLeft: 10 }} onPress={() => this.moveToWinnerList()}>
+                    <Text style={styles.challengeViewTextView}>View</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'flex-end',
-                }}>
-                <TouchableOpacity>
-                  <Text style={styles.challengeViewTextView}>View</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.boxes}>
-              <View
-                style={[
-                  styles.payItSmallBox,
-                  { justifyContent: 'center', alignItems: 'center' },
-                ]}>
-                <Image
-                  source={require('../../assets/shopIcon.png')}
-                  style={styles.shopIcon}
-                />
-              </View>
-              <View style={[styles.payItBigBox, { padding: 10 }]}>
-                <View style={styles.notificationBox}>
-                  <View style={{ flex: 1, justifyContent: 'center' }}>
-                    <Text style={styles.month}>Active</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                      {this.state.package ? (
-                        <Text style={styles.rupee}>
-                          {this.state.package.amount}
-                        </Text>
-                      ) : (
-                        <Text style={styles.rupee}>$11.96</Text>
-                      )}
-                    </View>
-                    {this.state.package ? (
-                      <Text style={styles.description}>
-                        {this.state.package.exp_date}
-                      </Text>
-                    ) : (
-                      <Text style={styles.description}>
-                        Expiry: 28-sep-2020
-                      </Text>
-                    )}
-                  </View>
-                  <View style={styles.buttonView}>
-                    <TouchableOpacity
-                      style={styles.subscriberButton}
-                      onPress={() => {
-                        this.moveToUserList();
-                      }}>
-                      <Image
-                        style={{ height: 15, width: 18 }}
-                        source={require('../../assets/heart.png')}
+              <View style={styles.boxes}>
+                <View
+                  style={[
+                    styles.smallBox,
+                    { justifyContent: 'center', alignItems: 'center' },
+                  ]}>
+                  <Image
+                    source={require('../../assets/cupIcon.png')}
+                    style={styles.userIcon}
+                  />
+                </View>
+                <View style={[styles.bigBox, { padding: 10 }]}>
+                  <FlatList
+                    initialNumToRender={2}
+                    data={winner}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) => (
+                      <WinnerList
+                        data={item}
                       />
-                    </TouchableOpacity>
-                  </View>
+                    )}
+                  />
                 </View>
               </View>
-            </View>
-          </ScrollView>
-          {this.state.flashMessage ? (
-            <View style={styles.flashMessage}>
-              <Text
-                style={{ color: 'white', fontFamily: 'Montserrat-Regular' }}>
-               Your package has been expired
-              </Text>
-            </View>
-          ) : null}
-        </View>
+
+              {role != "3" ?
+                <>
+                  <View style={styles.challengeView}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.challengeViewHeading}>PAY IT FORWORD</Text>
+                      <Text style={styles.challengeViewPara}>
+                        PIF here you can pay for others this way many people can play this game
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'flex-end',
+                      }}>
+                      <TouchableOpacity onPress={() => this.moveToPaymentScreen()} style={{ paddingVertical: 5 }}>
+                        <Text style={styles.challengeViewTextView}>View</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={styles.boxes}>
+                    <View
+                      style={[
+                        styles.payItSmallBox,
+                        { justifyContent: 'center', alignItems: 'center' },
+                      ]}>
+                      <Image
+                        source={require('../../assets/shopIcon.png')}
+                        style={styles.shopIcon}
+                      />
+                    </View>
+                    <View style={[styles.payItBigBox, { padding: 10 }]}>
+                      <View style={styles.notificationBox}>
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                          <Text style={styles.month}>{data && data.exp_status.toUpperCase()}</Text>
+                          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                            <Text style={styles.rupee}>
+                              {data && data.amount}
+                            </Text>
+                            <Text numberOfLines={1} style={[styles.month, { alignSelf: 'flex-end', marginLeft: 5, flex: 1 }]}>
+                              {data && data.subscription.description.toUpperCase()}
+                            </Text>
+                          </View>
+
+                          <Text style={styles.description}>
+                            {data && `Exp: ${moment(data.exp_date).format('ll')}`}
+                          </Text>
+
+                        </View>
+                        <View style={styles.buttonView}>
+                          <TouchableOpacity
+                            style={styles.subscriberButton}
+                            onPress={() => {
+                              this.moveToUserList();
+                            }}>
+                            <Image
+                              style={{ height: 15, width: 18 }}
+                              source={require('../../assets/heart.png')}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </>
+                : null}
+
+            </ScrollView>
+            {this.state.flashMessage ? (
+              <View style={styles.flashMessage}>
+                <Text
+                  style={{ color: 'white', fontFamily: 'Montserrat-Regular' }}>
+                  Your package has been expired
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        }
       </SafeAreaView>
     );
   }
@@ -425,7 +421,7 @@ const styles = StyleSheet.create({
     width: '66%',
     backgroundColor: '#81b840',
     borderRadius: 15,
-    justifyContent: 'center',
+    // justifyContent: 'center',
   },
   smallBox: {
     height: 150,
@@ -490,12 +486,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Regular',
     color: 'white',
   },
-  seperator: {
-    height: 1,
-    backgroundColor: 'white',
-    marginBottom: 10,
-    marginTop: 10,
-  },
+
   flashMessage: {
     position: 'absolute',
     backgroundColor: 'red',

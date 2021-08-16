@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,8 +13,8 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
-import {WebView} from 'react-native-webview';
-import {connect} from 'react-redux';
+import { WebView } from 'react-native-webview';
+import { connect } from 'react-redux';
 import ModalView from './Modal';
 import RBSheet from 'react-native-raw-bottom-sheet';
 class Premium extends Component {
@@ -43,7 +43,7 @@ class Premium extends Component {
     )
       .then((response) => response.json())
       .then((result) => {
-        this.setState({getPremium: result.data});
+        this.setState({ getPremium: result.data });
       })
       .catch((error) => console.log('error', error));
   }
@@ -67,25 +67,56 @@ class Premium extends Component {
         .then((response) => response.json())
 
         .then((data) => {
-          this.setState({showModal: false, status: 'Complete'});
+          this.setState({ showModal: false, status: 'Complete' });
           this.setModalVisible();
         })
         .catch((error) => {
           console.log('====', error);
         });
     } else if (data.title === 'cancel') {
-      this.setState({showModal: false, status: 'Cancelled'});
+      this.setState({ showModal: false, status: 'Cancelled' });
     } else {
       return;
     }
   };
   moveToUserList(item) {
-    this.RBSheet.close();
-    this.setState({
-      showModal: true,
-      amount: this.state.appleAmount.price,
-      package: this.state.appleAmount,
-    })
+    let formdata = new FormData();
+    this.setState({ package: item });
+    if (item.price === '0.00') {
+      formdata.append('pack_id', this.state.package.id);
+      formdata.append('transaction_id', item.description);
+      fetch('https://app.guessthatreceipt.com/api/saveOrder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${this.props.user.user.access_token}`,
+        },
+        body: formdata,
+      })
+        .then((response) => response.json())
+
+        .then((data) => {
+          console.log(data);
+          this.setModalVisible();
+        })
+        .catch((error) => {
+          console.log('====', error);
+        });
+    } else {
+      this.openPaymentModal()
+      // this.setState({
+      //   showModal: true,
+      //   modalText: item.description,
+      //   amount: item.price,
+      //   package: item,
+      // });
+    }
+    // this.RBSheet.close();
+    // this.setState({
+    //   showModal: true,
+    //   amount: this.state.appleAmount.price,
+    //   package: this.state.appleAmount,
+    // })
 
   }
   openPaymentModal = (item) => {
@@ -121,7 +152,7 @@ class Premium extends Component {
               }}>
               Become a premium
             </Text>
-            <View style={{marginTop: 10}}>
+            <View style={{ marginTop: 10 }}>
               <Text
                 style={{
                   textAlign: 'center',
@@ -140,7 +171,7 @@ class Premium extends Component {
           </View>
         </View>
 
-        <View style={{width: '95%', alignSelf: 'center', flex: 1}}>
+        <View style={{ width: '95%', alignSelf: 'center', flex: 1 }}>
           {!this.state.getPremium ? (
             <View style={styles.ActivityIndicatorStyle}>
               <ActivityIndicator color="#009688" size="large" />
@@ -150,14 +181,14 @@ class Premium extends Component {
               showsVerticalScrollIndicator={false}
               data={this.state.getPremium}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <View style={styles.notificationBox}>
-                  <View style={{flex: 1}}>
+                  <View style={{ flex: 1 }}>
                     <Text style={styles.month}>
                       {item.period_type.charAt(0).toUpperCase() +
                         item.period_type.slice(1)}
                     </Text>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Text style={styles.rupee}>${item.price}</Text>
                       <Text style={styles.monthYear}> Free</Text>
                     </View>
@@ -169,9 +200,9 @@ class Premium extends Component {
                   <View style={styles.buttonView}>
                     <TouchableOpacity
                       style={styles.subscriberButton}
-                      onPress={() => this.openPaymentModal(item)}>
+                       onPress={() => this.moveToUserList(item)}>
                       <Image
-                        style={{height: 15, width: 18}}
+                        style={{ height: 15, width: 18 }}
                         source={require('../../../assets/heart.png')}
                       />
                       <Text
@@ -219,9 +250,9 @@ class Premium extends Component {
         <Modal
           animationType="slide"
           visible={this.state.showModal}
-          onRequestClose={() => this.setState({showModal: false})}>
+          onRequestClose={() => this.setState({ showModal: false })}>
           <WebView
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             source={{
               uri: `http://pombopaypal.guessthatreceipt.com/paypal/${this.state.amount}`,
             }}

@@ -151,6 +151,26 @@ const Home_StackNavigator = createStackNavigator({
       headerBackImage: () => <CommonComponents.HeaderBackButton />,
     }),
   },
+  winnerList:{
+    screen: MainScreen.Winner,
+    navigationOptions: ({ navigation }) => ({
+      headerRight: () => (
+        <CommonComponents.HamBurger navigationProps={navigation} />
+      ),
+      safeAreaInsets: { top: 0 },
+      headerTitle: '',
+      headerStyle: {
+        backgroundColor: 'transparent',
+        shadowOffset: {
+          height: 0,
+          width: 0,
+        },
+        shadowOpacity: 0,
+        elevation: 0,
+      },
+      headerBackImage: () => <CommonComponents.HeaderBackButton />,
+    }),
+  }
 
 });
 //Stack Navigation for Notification Screen

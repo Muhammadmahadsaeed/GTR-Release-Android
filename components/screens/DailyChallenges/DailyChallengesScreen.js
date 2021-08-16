@@ -62,7 +62,7 @@ class DailyChallengesScreen extends React.Component {
     const res = this.state.scheduleArray;
 
     this.setState({isloading: true});
-    if (res.data.is_expired === 'active') {
+    if (res.data.is_expired == 'active') {
       this.setState({isloading: false});
       const params = new URLSearchParams();
       params.append('schedule_id', `${res.data.id}`);
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   flashMessage: {
     position: 'absolute',
-    backgroundColor: '#81b840',
+    backgroundColor: 'red',
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

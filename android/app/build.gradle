@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.guessthatreceipt"
+        applicationId "com.guessthatrec"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -230,7 +230,7 @@ class LiveStreamingScreen extends Component<Props, State> {
     })
       .then((result) => result.json())
       .then((res) => {
-        if (res.data.is_expired === 'active') {
+        if (res.data.is_expired == 'active') {
          
           ToastAndroid.show('Please check your email', ToastAndroid.SHORT)
         } else {
