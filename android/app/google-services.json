@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "446551454199",
-    "firebase_url": "https://gtre-18605.firebaseio.com",
-    "project_id": "gtre-18605",
-    "storage_bucket": "gtre-18605.appspot.com"
+    "project_number": "903979561430",
+    "project_id": "guessthatrec-73c5b",
+    "storage_bucket": "guessthatrec-73c5b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:446551454199:android:d0917b8635212907d97ef2",
+        "mobilesdk_app_id": "1:903979561430:android:ffc5346dcd71fc0114f477",
         "android_client_info": {
-          "package_name": "com.guessthatreceipt"
+          "package_name": "com.guessthatrec"
         }
       },
       "oauth_client": [
         {
-          "client_id": "446551454199-gu1a66fdi3hcg76vco3alhar4m02jd6l.apps.googleusercontent.com",
+          "client_id": "903979561430-to6h84p4rjl5eooun5o031lts5i5uj7g.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAp-Bi8RpjtL3svdaer87al8-mbKW6FdyU"
+          "current_key": "AIzaSyDTstyJQyv7wINZ6IgcWSWyoNfwRSMbdKI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "446551454199-gu1a66fdi3hcg76vco3alhar4m02jd6l.apps.googleusercontent.com",
+              "client_id": "903979561430-to6h84p4rjl5eooun5o031lts5i5uj7g.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

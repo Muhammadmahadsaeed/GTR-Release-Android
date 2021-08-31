@@ -19,10 +19,6 @@ class CustomSidebarMenu extends Component {
           navOptionName: 'Pay it forward',
           screenToNavigate: 'payitforward',
         },
-        // {
-        //   navOptionName: 'Live',
-        //   screenToNavigate: 'LiveScreen',
-        // },
         {
           navOptionName: 'Privacy Policy',
           screenToNavigate: 'privacyScreen',
@@ -30,6 +26,10 @@ class CustomSidebarMenu extends Component {
         {
           navOptionName: 'Term And Conditions',
           screenToNavigate: 'term',
+        },
+        {
+          navOptionName: 'Payment History',
+          screenToNavigate: 'history',
         },
       ],
     };

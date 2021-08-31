@@ -17,6 +17,16 @@ import { WebView } from 'react-native-webview';
 import { connect } from 'react-redux';
 import ModalView from './Modal';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import RadioButtonRN from 'radio-buttons-react-native';
+
+const radio_props = [
+  {
+    label: 'Paypal'
+  },
+  {
+    label: 'Apple Pay'
+  }
+];
 class Premium extends Component {
   constructor(props) {
     super();
@@ -27,10 +37,13 @@ class Premium extends Component {
       showModal: false,
       package: '',
       modalText: '',
-      appleAmount: ''
     };
   }
-  async componentDidMount() {
+  componentDidMount() {
+   this.getPackages()
+  }
+
+  getPackages = async () =>{
     await fetch(
       'https://app.guessthatreceipt.com/api/subscriptions?type=premium',
       {
@@ -47,6 +60,7 @@ class Premium extends Component {
       })
       .catch((error) => console.log('error', error));
   }
+
   handleResponse = (data) => {
     let url = data.url;
     let fields = url.split('?');
@@ -79,11 +93,12 @@ class Premium extends Component {
       return;
     }
   };
-  moveToUserList(item) {
+ 
+  openBottomSheet = (item) => {
     let formdata = new FormData();
     this.setState({ package: item });
     if (item.price === '0.00') {
-      formdata.append('pack_id', this.state.package.id);
+      formdata.append('pack_id', item.id);
       formdata.append('transaction_id', item.description);
       fetch('https://app.guessthatreceipt.com/api/saveOrder', {
         method: 'POST',
@@ -96,49 +111,50 @@ class Premium extends Component {
         .then((response) => response.json())
 
         .then((data) => {
-          console.log(data);
           this.setModalVisible();
         })
         .catch((error) => {
           console.log('====', error);
         });
     } else {
-      this.openPaymentModal()
-      // this.setState({
-      //   showModal: true,
-      //   modalText: item.description,
-      //   amount: item.price,
-      //   package: item,
-      // });
+      this.RBSheet.open();
     }
-    // this.RBSheet.close();
-    // this.setState({
-    //   showModal: true,
-    //   amount: this.state.appleAmount.price,
-    //   package: this.state.appleAmount,
-    // })
-
-  }
-  openPaymentModal = (item) => {
-    this.setState({ appleAmount: item })
-    this.RBSheet.open();
   };
+
   setModalVisible() {
     this.modalRef.show();
   }
+
+  goToPayment = (e) => {
+    this.RBSheet.close();
+    const { label } = e
+    if(label == 'Paypal'){
+      this.goToPaypal()
+    }
+    else{
+      console.log("apple=====");
+    }
+  }
+
+  goToPaypal() {
+    this.setState({
+      showModal: true,
+      amount: this.state.package.price,
+    })
+  }
+
   renderContent = () => (
-    <View style={{ flex: 1 }}>
-
-      <TouchableOpacity style={{ paddingHorizontal: 10, marginHorizontal: 20, paddingVertical: 20 }} onPress={() => this.moveToUserList()}>
-        <Text style={{
-          color: '#81b840',
-          fontSize: 20,
-          fontFamily: 'Montserrat-Bold',
-        }}>Paypal</Text>
-      </TouchableOpacity>
-
+    <View style={{ flex: 1, paddingHorizontal: 20 }}>
+      <RadioButtonRN
+      //  initial={1}
+        data={radio_props}
+        textStyle={styles.radioText}
+        activeColor={'#81b840'}
+        selectedBtn={(e) => this.goToPayment(e)}
+      />
     </View>
   );
+
   render() {
     return (
       <View style={styles.container}>
@@ -200,7 +216,7 @@ class Premium extends Component {
                   <View style={styles.buttonView}>
                     <TouchableOpacity
                       style={styles.subscriberButton}
-                       onPress={() => this.moveToUserList(item)}>
+                      onPress={() => this.openBottomSheet(item)}>
                       <Image
                         style={{ height: 15, width: 18 }}
                         source={require('../../../assets/heart.png')}
@@ -225,7 +241,7 @@ class Premium extends Component {
           ref={(ref) => {
             this.RBSheet = ref;
           }}
-          height={300}
+          height={200}
           closeOnDragDown={true}
           openDuration={300}
           keyboardAvoidingViewEnabled={true}
@@ -243,6 +259,7 @@ class Premium extends Component {
           }}>
           {this.renderContent()}
         </RBSheet>
+        
         <ModalView
           ref={(target) => (this.modalRef = target)}
           text={this.state.modalText}
@@ -378,6 +395,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  bottomSheetView: {
+    paddingHorizontal: 10,
+    marginHorizontal: 20,
+    flexDirection: "row",
+    alignItems: 'center',
+  },
+  radioText: {
+    color: '#81b840',
+    fontSize: 20,
+    fontFamily: 'Montserrat-Bold',
+  },
+  
 });
 
 const mapStateToProps = (state) => {

@@ -17,6 +17,17 @@ import { WebView } from 'react-native-webview';
 import { connect } from 'react-redux';
 import ModalView from './Modal';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import RadioButtonRN from 'radio-buttons-react-native';
+
+const radio_props = [
+  {
+    label: 'Paypal'
+  },
+  {
+    label: 'Apple Pay'
+  }
+];
+
 class PayItForwardScreen extends Component {
   constructor() {
     super();
@@ -27,11 +38,16 @@ class PayItForwardScreen extends Component {
       loading: false,
       getPremium: '',
       amount: 0,
-      appleAmount: ''
+      appleAmount: '',
+      package: '',
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.getPackages()
+  }
+
+  getPackages = async () => {
     await fetch('https://app.guessthatreceipt.com/api/subscriptions?type=forward', {
       method: 'GET',
       headers: {
@@ -79,37 +95,44 @@ class PayItForwardScreen extends Component {
       return;
     }
   };
-  moveToUserList(item) {
-    this.RBSheet.close();
+
+  goToPaypal() {
     this.setState({
       showModal: true,
-      amount: this.state.appleAmount.price,
-      package: this.state.appleAmount,
+      amount: this.state.package.price,
     })
 
   }
   setModalVisible() {
     this.modalRef.show();
   }
-  moveToApplePay = () => {
-    this.RBSheet.close();
+  goToApplePay = () => {
     // this.props.navigation.navigate('ApplePayScreen', { amount: this.state.appleAmount })
   }
+  goToPayment = (e) => {
+    this.RBSheet.close();
+    const { label } = e
+    if (label == 'Paypal') {
+      this.goToPaypal()
+    }
+    else {
+      this.goToApplePay()
+    }
+  }
   renderContent = () => (
-    <View style={{ flex: 1 }}>
-
-      <TouchableOpacity style={{ paddingHorizontal: 10, marginHorizontal: 20, paddingVertical: 20 }} onPress={() => this.moveToUserList()}>
-        <Text style={{
-          color: '#81b840',
-          fontSize: 20,
-          fontFamily: 'Montserrat-Bold',
-        }}>Paypal</Text>
-      </TouchableOpacity>
-
+    <View style={{ flex: 1, paddingHorizontal: 20 }}>
+      <RadioButtonRN
+        // initial={-1}
+        data={radio_props}
+        textStyle={styles.radioText}
+        activeColor={'#81b840'}
+        selectedBtn={(e) => this.goToPayment(e)}
+      />
     </View>
   );
-  openPaymentModal = (item) => {
-    this.setState({ appleAmount: item })
+
+  openBottomSheet = (item) => {
+    this.setState({ package: item })
     this.RBSheet.open();
   };
 
@@ -174,8 +197,7 @@ class PayItForwardScreen extends Component {
                   <View style={styles.buttonView}>
                     <TouchableOpacity
                       style={styles.subscriberButton}
-                      // onPress={() => this.moveToUserList(item)}
-                      onPress={() => this.openPaymentModal(item)}
+                      onPress={() => this.openBottomSheet(item)}
                     >
                       <Image
                         style={{ height: 15, width: 18 }}
@@ -201,7 +223,7 @@ class PayItForwardScreen extends Component {
           ref={(ref) => {
             this.RBSheet = ref;
           }}
-          height={300}
+          height={200}
           closeOnDragDown={true}
           openDuration={300}
           keyboardAvoidingViewEnabled={true}
@@ -219,13 +241,14 @@ class PayItForwardScreen extends Component {
           }}>
           {this.renderContent()}
         </RBSheet>
+
         <ModalView ref={(target) => (this.modalRef = target)} />
         <Modal
           animationType="slide"
           visible={this.state.showModal}
-          onRequestClose={() => this.setState({showModal: false})}>
+          onRequestClose={() => this.setState({ showModal: false })}>
           <WebView
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             source={{
               uri: `http://pombopaypal.guessthatreceipt.com/paypal/${this.state.amount}`,
             }}
@@ -318,6 +341,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  radioText: {
+    color: '#81b840',
+    fontSize: 20,
+    fontFamily: 'Montserrat-Bold',
   },
 });
 const mapStateToProps = (state) => {

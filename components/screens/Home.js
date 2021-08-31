@@ -31,13 +31,18 @@ class Home extends Component {
     // this.checkPermission();
     // this.createChannel();
     // this.notificationListener();
-    this.getWinner()
-    if (this.props.user.user.user.user_details.role_id != "3") {
-      this.getPackage();
-    }
-
+    const { navigation } = this.props;
+    this.focusListener = navigation.addListener("didFocus", () => {
+      this.getWinner()
+      if (this.props.user.user.user.user_details.role_id != "3") {
+        this.getPackage();
+      }
+    });
   }
-
+  componentWillUnmount() {
+    // Remove the event listener
+    this.focusListener.remove();
+  }
   getWinner = async () => {
     await fetch(
       'https://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
@@ -68,6 +73,7 @@ class Home extends Component {
     })
       .then((response) => response.json())
       .then((result) => {
+        console.log(result);
         this.setState({ data: result.data, isLoading: false });
       })
       .catch((error) => this.setState({ isLoading: false }));

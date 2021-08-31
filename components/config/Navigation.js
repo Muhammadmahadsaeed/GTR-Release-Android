@@ -20,6 +20,7 @@ import * as MainScreen from '../screens/index';
 import * as PlayerScreens from '../screens/PlayersScreens/index';
 import Privacy from '../screens/PrivacyPolicy';
 import TermAndCondition from '../screens/TermScreen';
+import History from '../screens/PaymentHistory/History';
 
 // Tab Navigation for userlist and giver
 const TabScreen = createMaterialTopTabNavigator(
@@ -151,7 +152,7 @@ const Home_StackNavigator = createStackNavigator({
       headerBackImage: () => <CommonComponents.HeaderBackButton />,
     }),
   },
-  winnerList:{
+  winnerList: {
     screen: MainScreen.Winner,
     navigationOptions: ({ navigation }) => ({
       headerRight: () => (
@@ -532,10 +533,32 @@ const PrivacyStack = createStackNavigator({
   }
 })
 
-
 const TermStack = createStackNavigator({
   Term: {
     screen: TermAndCondition,
+    navigationOptions: ({ navigation }) => ({
+      headerRight: () => (
+        <CommonComponents.HamBurger navigationProps={navigation} />
+      ),
+      safeAreaInsets: { top: 0 },
+      headerTitle: '',
+      headerStyle: {
+        backgroundColor: 'none',
+        shadowOffset: {
+          height: 0,
+          width: 0,
+        },
+        shadowOpacity: 0,
+        elevation: 0,
+      },
+      headerBackImage: () => <CommonComponents.HeaderBackButton />,
+    }),
+  }
+})
+
+const HistoryStack = createStackNavigator({
+  PaymentHistory: {
+    screen: History,
     navigationOptions: ({ navigation }) => ({
       headerRight: () => (
         <CommonComponents.HamBurger navigationProps={navigation} />
@@ -578,6 +601,9 @@ const DrawerNavigator = createDrawerNavigator(
     term: {
       screen: TermStack,
 
+    },
+    history: {
+      screen: HistoryStack
     }
   },
   {
