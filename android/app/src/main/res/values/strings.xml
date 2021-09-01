@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GTR</string>
+    <string name="facebook_app_id">653064435667246</string>
+    <string name="RNB_GOOGLE_PLAY_LICENSE_KEY">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwTMP6G9pCmsti7xywMR5mGBfJfgE+ZoROHkVIKCxKQhNIp3k8qwjf4Y75QOUyvvaxNv9inNBjV5xkSUIJ2j2o3w6t44PQ45V3LzD0KT7/mErAyZMCGiDJzLSOuxeqlF0Kc4QgpTI02u9sgz/lEyC8IFaaHKoRW/xBO18Jl/mKlSSnbeUCgVqOftq5+e5tiVC3mkgFb6e9R8N4yBT/649MySvvZkSe5R6o923D4YplkWod2Vc5bp9XmyM7YhDUxvvKJrW98nyqB/Dk7dbONiFdiYcf9bcIBu4ecZCrqlaQsAhEJt3YVHJKJ/ahgQUrECeVKzLV4+ybMD10SDJprvCfwIDAQAB</string>
 </resources>

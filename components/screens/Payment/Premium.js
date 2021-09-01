@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import ModalView from './Modal';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import RadioButtonRN from 'radio-buttons-react-native';
+import PremuimList from './PremiumList';
 
 const radio_props = [
   {
@@ -40,10 +41,10 @@ class Premium extends Component {
     };
   }
   componentDidMount() {
-   this.getPackages()
+    this.getPackages()
   }
 
-  getPackages = async () =>{
+  getPackages = async () => {
     await fetch(
       'https://app.guessthatreceipt.com/api/subscriptions?type=premium',
       {
@@ -93,11 +94,12 @@ class Premium extends Component {
       return;
     }
   };
- 
+
   openBottomSheet = (item) => {
     let formdata = new FormData();
     this.setState({ package: item });
     if (item.price === '0.00') {
+      this.setState({ isPackageLoading: true })
       formdata.append('pack_id', item.id);
       formdata.append('transaction_id', item.description);
       fetch('https://app.guessthatreceipt.com/api/saveOrder', {
@@ -108,14 +110,13 @@ class Premium extends Component {
         },
         body: formdata,
       })
-        .then((response) => response.json())
-
-        .then((data) => {
-          this.setModalVisible();
-        })
-        .catch((error) => {
-          console.log('====', error);
-        });
+      .then((response) => response.json())
+      .then((data) => {
+        this.setModalVisible();
+      })
+      .catch((error) => {
+        console.log('====', error);
+      });
     } else {
       this.RBSheet.open();
     }
@@ -128,10 +129,10 @@ class Premium extends Component {
   goToPayment = (e) => {
     this.RBSheet.close();
     const { label } = e
-    if(label == 'Paypal'){
+    if (label == 'Paypal') {
       this.goToPaypal()
     }
-    else{
+    else {
       console.log("apple=====");
     }
   }
@@ -146,7 +147,7 @@ class Premium extends Component {
   renderContent = () => (
     <View style={{ flex: 1, paddingHorizontal: 20 }}>
       <RadioButtonRN
-      //  initial={1}
+        //  initial={1}
         data={radio_props}
         textStyle={styles.radioText}
         activeColor={'#81b840'}
@@ -198,41 +199,7 @@ class Premium extends Component {
               data={this.state.getPremium}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
-                <View style={styles.notificationBox}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.month}>
-                      {item.period_type.charAt(0).toUpperCase() +
-                        item.period_type.slice(1)}
-                    </Text>
-                    <View style={{ flexDirection: 'row' }}>
-                      <Text style={styles.rupee}>${item.price}</Text>
-                      <Text style={styles.monthYear}> Free</Text>
-                    </View>
-
-                    <Text style={styles.description}>
-                      Pay it forward pays for 4 other gamer
-                    </Text>
-                  </View>
-                  <View style={styles.buttonView}>
-                    <TouchableOpacity
-                      style={styles.subscriberButton}
-                      onPress={() => this.openBottomSheet(item)}>
-                      <Image
-                        style={{ height: 15, width: 18 }}
-                        source={require('../../../assets/heart.png')}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          color: 'white',
-                          paddingLeft: 5,
-                          fontFamily: 'Montserrat-Regular',
-                        }}>
-                        Subscribe
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <PremuimList data={item} bottomSheet={this.openBottomSheet} />
               )}
             />
           )}
@@ -259,7 +226,7 @@ class Premium extends Component {
           }}>
           {this.renderContent()}
         </RBSheet>
-        
+
         <ModalView
           ref={(target) => (this.modalRef = target)}
           text={this.state.modalText}
@@ -314,59 +281,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: 'center',
   },
-  notificationBox: {
-    padding: 10,
-    marginTop: 5,
-    marginBottom: 5,
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    borderRadius: 10,
-    justifyContent: 'space-between',
-  },
-  month: {
-    color: 'gray',
-    fontFamily: 'Montserrat-Regular',
-  },
-  rupee: {
-    color: '#81b840',
-    fontSize: 30,
-    fontFamily: 'Montserrat-Bold',
-  },
-  description: {
-    color: 'gray',
-    fontFamily: 'Montserrat-Regular',
-  },
-  buttonView: {
-    justifyContent: 'center',
-  },
-  subscriberButton: {
-    backgroundColor: '#81b840',
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 35,
-    paddingRight: 35,
-    borderRadius: 50,
-    flexDirection: 'row',
 
-    alignItems: 'center',
-  },
-  subscriberButtonWithStar: {
-    backgroundColor: '#81b840',
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 25,
-    paddingRight: 25,
-    borderRadius: 50,
-    flexDirection: 'row',
-
-    alignItems: 'center',
-  },
-  monthYear: {
-    color: '#81b840',
-    alignSelf: 'flex-end',
-    fontFamily: 'Montserrat-Regular',
-    color: 'gray',
-  },
   footer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -406,7 +321,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Montserrat-Bold',
   },
-  
+
 });
 
 const mapStateToProps = (state) => {

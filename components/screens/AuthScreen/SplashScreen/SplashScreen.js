@@ -3,54 +3,76 @@ import {
 
   StyleSheet,
   ImageBackground,
-  View, Image,ActivityIndicator
+  View, Image, ActivityIndicator
 
 } from 'react-native';
-import {connect} from 'react-redux';
+import NetInfo from "@react-native-community/netinfo";
+import { connect } from 'react-redux';
+import NoInternetModal from '../../CommonComponents/NoInternetModal';
 
 
 class SplashScreen extends React.Component {
-  constructor(){
+  constructor() {
     super()
     this.state = {
-      loading : true
+      loading: true,
+      noInternet: false
     }
   }
   componentDidMount() {
-    setTimeout( () => {
-       this.setTimePassed();
-    },2000);
+    setTimeout(() => {
+      this.netStatusListener()
+    //   this.setTimePassed();
+    }, 1000);
 
   }
-  setTimePassed() {
-     this.setState({loading : false}) 
-     
-     if(this.props.user.user.user !== null){
+  checkUser = () => {
+    this.setState({ loading: false })
+    if (this.props.user.user.user !== null) {
       this.props.navigation.navigate('Drawer');
-     }
-     else{
+    }
+    else {
       this.props.navigation.navigate('AuthScreen')
-     }
-     
+    }
   }
-  render() {
-    return (
 
+  netStatusListener = () => {
+    NetInfo.fetch().then((connectionInfo) => {
+      if (connectionInfo.isConnected === false) {
+        this.setState({ noInternet: true});
+      } else {
+        this.setState({ noInternet: false});
+        this.checkUser()
+      }
+    });
+  };
+
+  updateInternetModal = (val) => {
+  
+    this.setState({ noInternet: val});
+    this.netStatusListener()
+  };
+
+  render() {
+    const { noInternet } = this.state
+
+    return (
       <View style={styles.container}>
         <ImageBackground style={styles.backgroundImage} source={require('../../../../assets/bg.png')}>
-
           <View style={styles.logoContainer}>
             <View style={styles.centerImage}>
-               <Image style={styles.logo} source={require('../../../../assets/Logo.png')} /> 
-
+              <Image style={styles.logo} source={require('../../../../assets/Logo.png')} />
             </View>
-            
-               <ActivityIndicator size="large" color="white" />
-            
-
-
+            <ActivityIndicator size="large" color="white" />
           </View>
         </ImageBackground>
+        {noInternet && <NoInternetModal
+          ref={(ref) => {
+            this.noInternetModal = ref;
+          }}
+          visible={noInternet}
+          updateState={this.updateInternetModal}
+        />}
       </View>
     );
   }
@@ -63,28 +85,28 @@ const styles = StyleSheet.create({
 
   },
   logoContainer: {
-    
+
     justifyContent: "center",
     alignItems: "center",
-    flex:1
+    flex: 1
   },
-  
-  centerImage : {
-    
+
+  centerImage: {
+
     justifyContent: "center",
     alignItems: "center",
-    height:400,
-    width:"80%"
+    height: 400,
+    width: "80%"
   },
   logo: {
-   height:150,
-   width : "100%"
+    height: 150,
+    width: "100%"
   },
   backgroundImage: {
     flex: 1,
     width: '100%',
     height: '100%',
-   
+
   },
 });
 

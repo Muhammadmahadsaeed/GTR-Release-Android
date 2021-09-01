@@ -6,12 +6,13 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
-  ScrollView, ActivityIndicator
+  ScrollView, ActivityIndicator,LogBox
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 import { connect } from 'react-redux';
 import { strTime, setCurrentDate } from './CommonComponents/DateTime';
+import IAPPurchaseListener from './CommonComponents/IAPPurchaseListener';
 import WinnerList from './WinnerList';
 // import firebase from 'react-native-firebase';
 const moment = require('moment')
@@ -33,6 +34,7 @@ class Home extends Component {
     // this.notificationListener();
     const { navigation } = this.props;
     this.focusListener = navigation.addListener("didFocus", () => {
+      LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
       this.getWinner()
       if (this.props.user.user.user.user_details.role_id != "3") {
         this.getPackage();
@@ -73,7 +75,6 @@ class Home extends Component {
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
         this.setState({ data: result.data, isLoading: false });
       })
       .catch((error) => this.setState({ isLoading: false }));
@@ -374,6 +375,7 @@ class Home extends Component {
             ) : null}
           </View>
         }
+        <IAPPurchaseListener />
       </SafeAreaView>
     );
   }
