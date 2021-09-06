@@ -6,7 +6,7 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
-  ScrollView, ActivityIndicator,LogBox
+  ScrollView, ActivityIndicator, LogBox
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
@@ -132,32 +132,32 @@ class Home extends Component {
 
   checkPackage() {
     const role = this.props.user.user.user.user_details.role_id
-    if (role != "3") {
-      this.setState({ pkgLoading: true })
-      fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.props.user.user.user.access_token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          this.setState({ pkgLoading: false })
-          if (result.data == "Unauthenticated." || result.data.exp_status == "expired") {
-            this.setState({ flashMessage: true }, () => {
-              setTimeout(() => this.closeFlashMessage(), 3000);
-            });
-          }
-          else {
+    // if (role != "3") {
+    //   this.setState({ pkgLoading: true })
+    //   fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
+    //     method: 'POST',
+    //     headers: {
+    //       Authorization: `Bearer ${this.props.user.user.user.access_token}`,
+    //       'Content-Type': 'application/json',
+    //     },
+    //   })
+    //     .then((response) => response.json())
+    //     .then((result) => {
+    //       this.setState({ pkgLoading: false })
+    //       if (result.data == "Unauthenticated." || result.data.exp_status == "expired") {
+    //         this.setState({ flashMessage: true }, () => {
+    //           setTimeout(() => this.closeFlashMessage(), 3000);
+    //         });
+    //       }
+    //       else {
             this.props.navigation.navigate('DailyChallenges');
-          }
-        })
-        .catch((error) => console.log('error', error));
-    }
-    else {
-      this.props.navigation.navigate('DailyChallenges');
-    }
+    //       }
+    //     })
+    //     .catch((error) => console.log('error', error));
+    // }
+    // else {
+    //   this.props.navigation.navigate('DailyChallenges');
+    // }
   }
 
   closeFlashMessage() {
@@ -331,18 +331,18 @@ class Home extends Component {
                     <View style={[styles.payItBigBox, { padding: 10 }]}>
                       <View style={styles.notificationBox}>
                         <View style={{ flex: 1, justifyContent: 'center' }}>
-                          <Text style={styles.month}>{data && data.exp_status.toUpperCase()}</Text>
+                          <Text style={styles.month}>{data != 'Unauthenticated.' && data.exp_status.toUpperCase()}</Text>
                           <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                             <Text style={styles.rupee}>
-                              {data && data.amount}
+                              {data != 'Unauthenticated.' && data.amount}
                             </Text>
                             <Text numberOfLines={1} style={[styles.month, { alignSelf: 'flex-end', marginLeft: 5, flex: 1 }]}>
-                              {data && data.subscription.description.toUpperCase()}
+                              {data != 'Unauthenticated.' && data.subscription.description.toUpperCase()}
                             </Text>
                           </View>
 
                           <Text style={styles.description}>
-                            {data && `Exp: ${moment(data.exp_date).format('ll')}`}
+                            {data != 'Unauthenticated.' && `Exp: ${moment(data.exp_date).format('ll')}`}
                           </Text>
 
                         </View>
@@ -363,7 +363,6 @@ class Home extends Component {
                   </View>
                 </>
                 : null}
-
             </ScrollView>
             {this.state.flashMessage ? (
               <View style={styles.flashMessage}>
@@ -375,7 +374,7 @@ class Home extends Component {
             ) : null}
           </View>
         }
-        <IAPPurchaseListener />
+        {/* <IAPPurchaseListener /> */}
       </SafeAreaView>
     );
   }

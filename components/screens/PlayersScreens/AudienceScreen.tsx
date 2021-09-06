@@ -46,7 +46,7 @@ interface State {
 }
 class AudienceScreen extends Component<Props, State> {
   _engine?: RtcEngine;
-  constructor(props) {
+  constructor(props: Props | Readonly<Props>) {
     super(props);
     this.state = {
       appId: '253294740cac43e6965ff2e03099c520',
@@ -61,32 +61,29 @@ class AudienceScreen extends Component<Props, State> {
   }
 
   componentDidMount() {
-    if (Platform.OS === 'android') {
-      requestCameraAndAudioPermission().then(() => {
-        fetch(
-          'http://pombopaypal.guessthatreceipt.com/api/DemoServer/rtcToken?channelName=GTR',
-          {
-            method: 'GET',
-          },
-        )
-          .then((res) => res.json())
-          .then((result) => {
-            this.setState({token: result.key});
-            this.init().then(() => {
-              this.setState({toggle: false});
-              this._engine?.joinChannel(
-                this.state.token,
-                this.state.channelName,
-                null,
-                0,
-              );
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    }
+    this.getToken()
+  }
+
+  getToken = async () => {
+    fetch('http://pombopaypal.guessthatreceipt.com/api/DemoServer/rtcToken?channelName=GTR',{
+      method: 'GET',
+  })
+  .then((res) => res.json())
+  .then((result) => {
+    this.setState({token: result.key});
+    this.init().then(() => {
+      this.setState({toggle: false});
+      this._engine?.joinChannel(
+        this.state.token,
+        this.state.channelName,
+        null,
+        0,
+      );
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
   }
 
   init = async () => {
@@ -151,9 +148,7 @@ class AudienceScreen extends Component<Props, State> {
     this._engine?.destroy();
   }
  
- 
   render() {
- 
     return (
       <View style={styles.max}>
         {this._renderVideos()}

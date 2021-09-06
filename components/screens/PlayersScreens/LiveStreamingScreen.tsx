@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Platform,
   ToastAndroid,
@@ -10,6 +10,7 @@ import {
   Image,
   ActivityIndicator,
   FlatList,
+  Alert,
 } from 'react-native';
 import RtcEngine, {
   ChannelProfile,
@@ -24,8 +25,7 @@ import {
   NavigationScreenProp,
   NavigationState,
 } from 'react-navigation';
-import requestCameraAndAudioPermission from '../DailyChallenges/Permission';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 
 const dimensions = {
   width: Dimensions.get('window').width,
@@ -54,7 +54,8 @@ interface State {
 }
 class LiveStreamingScreen extends Component<Props, State> {
   _engine?: RtcEngine;
-  constructor(props) {
+  
+  constructor(props: Props | Readonly<Props>) {
     super(props);
     this.state = {
       appId: '253294740cac43e6965ff2e03099c520',
@@ -71,36 +72,31 @@ class LiveStreamingScreen extends Component<Props, State> {
 
   componentDidMount() {
     this.getSchedule();
-    if (Platform.OS === 'android') {
-      requestCameraAndAudioPermission().then(() => {
-        this.getToken();
-      });
-    }
+    this.getToken();
   }
+
   getToken() {
-    fetch(
-      'http://pombopaypal.guessthatreceipt.com/api/DemoServer/rtcToken?channelName=GTR',
-      {
-        method: 'GET',
-      },
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        this.setState({token: result.key});
-        this.init().then(() => {
-          this.setState({toggle: false});
-          this._engine?.joinChannel(
-            result.key,
-            this.state.channelName,
-            null,
-            0,
-          );
-        });
-      })
-      .catch((err) => {
-        console.log(err);
+    fetch('http://pombopaypal.guessthatreceipt.com/api/DemoServer/rtcToken?channelName=GTR', {
+      method: 'GET',
+    })
+    .then((res) => res.json())
+    .then((result) => {
+      this.setState({ token: result.key });
+      this.init().then(() => {
+        this.setState({ toggle: false });
+        this._engine?.joinChannel(
+          result.key,
+          this.state.channelName,
+          null,
+          0,
+        );
       });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   }
+
   getSchedule() {
     fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
@@ -110,14 +106,16 @@ class LiveStreamingScreen extends Component<Props, State> {
     })
       .then((result) => result.json())
       .then((res) => {
-        this.setState({schedule: res.data});
+        this.setState({ schedule: res.data });
       })
       .catch((err) => {
         console.log(err);
       });
   }
+
   init = async () => {
-    const {appId} = this.state;
+    console.log("hellow")
+    const { appId } = this.state;
     this._engine = await RtcEngine.create(appId);
     await this._engine.enableVideo();
     await this._engine.enableAudio();
@@ -126,7 +124,7 @@ class LiveStreamingScreen extends Component<Props, State> {
     this._engine.addListener('UserJoined', (uid, elapsed) => {
       console.log('UserJoined', uid, elapsed);
       // Get current peer IDs
-      const {peerIds} = this.state;
+      const { peerIds } = this.state;
       // If new user
       if (peerIds.indexOf(uid) === -1) {
         this.setState({
@@ -138,7 +136,7 @@ class LiveStreamingScreen extends Component<Props, State> {
 
     this._engine.addListener('UserOffline', (uid, reason) => {
       console.log('UserOffline', uid, reason);
-      const {peerIds} = this.state;
+      const { peerIds } = this.state;
       this.setState({
         // Remove peer ID from state array
         peerIds: peerIds.filter((id) => id !== uid),
@@ -149,13 +147,13 @@ class LiveStreamingScreen extends Component<Props, State> {
     this._engine.addListener('JoinChannelSuccess', (channel, uid, elapsed) => {
       console.log('JoinChannelSuccess', channel, uid, elapsed);
       // Set state variable to true
-      this.setState({joinSucceed: true});
+      this.setState({ joinSucceed: true });
     });
   };
 
   startCall = async () => {
     // Join Channel using null token and channel name
-    this.setState({toggle: false});
+    this.setState({ toggle: false });
     await this._engine?.joinChannel(
       this.state.token,
       this.state.channelName,
@@ -169,7 +167,7 @@ class LiveStreamingScreen extends Component<Props, State> {
     if (role === '2') {
       console.log('user');
       await this._engine?.leaveChannel();
-      this.setState({toggle: true, peerIds: [], joinSucceed: false});
+      this.setState({ toggle: true, peerIds: [], joinSucceed: false });
     } else {
       console.log('user nh h');
       const schedule = this.state.schedule;
@@ -188,7 +186,7 @@ class LiveStreamingScreen extends Component<Props, State> {
         .then((res) => {
           // clearTimeout(this.timer);
           this._engine?.leaveChannel();
-          this.setState({toggle: true, peerIds: [], joinSucceed: false});
+          this.setState({ toggle: true, peerIds: [], joinSucceed: false });
         })
         .catch((err) => console.log(err));
     }
@@ -198,19 +196,19 @@ class LiveStreamingScreen extends Component<Props, State> {
   }
   enableDisableAudio() {
     if (this.state.enableDisableAudioToggle) {
-      this.setState({enableDisableAudioToggle: false});
+      this.setState({ enableDisableAudioToggle: false });
       this._engine?.disableAudio();
     } else {
-      this.setState({enableDisableAudioToggle: true});
+      this.setState({ enableDisableAudioToggle: true });
       this._engine?.enableAudio();
     }
   }
   enableDisableVideo() {
     if (this.state.enableDisableVideoToggle) {
-      this.setState({enableDisableVideoToggle: false});
+      this.setState({ enableDisableVideoToggle: false });
       this._engine?.disableVideo();
     } else {
-      this.setState({enableDisableVideoToggle: true});
+      this.setState({ enableDisableVideoToggle: true });
       this._engine?.enableVideo();
     }
   }
@@ -221,8 +219,8 @@ class LiveStreamingScreen extends Component<Props, State> {
     this.props.navigation.navigate('PlayerScreen');
   }
 
-  async moveToAnswer() {
-    fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
+  moveToAnswer = async () => {
+    await fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -230,9 +228,13 @@ class LiveStreamingScreen extends Component<Props, State> {
     })
       .then((result) => result.json())
       .then((res) => {
-        if (res.data.is_expired == 'active') {
-         
-          ToastAndroid.show('Please check your email', ToastAndroid.SHORT)
+        if (res.data.is_expired === 'active') {
+          if (Platform.OS != 'android') {
+            Alert.alert('You will be move when game will ended')
+          }
+          else {
+            ToastAndroid.show('You will be move when game will ended', ToastAndroid.SHORT)
+          }
         } else {
           this.props.navigation.navigate('UserAnswerScreen', {
             schedule: res,
@@ -283,9 +285,7 @@ class LiveStreamingScreen extends Component<Props, State> {
         console.log(err);
       });
   }
-  // timer: ReturnType<typeof setInterval> = setInterval(() => {
-  //   this.getJoinedUsers();
-  // }, 2000);
+
   render() {
     
     const role = this.props.user.user.user.user_details.role_id;
@@ -311,7 +311,7 @@ class LiveStreamingScreen extends Component<Props, State> {
         </View>
         <View style={styles.bottom}>
           <View style={styles.icons}>
-            <View style={{height: 35, width: 35}}>
+            <View style={{ height: 35, width: 35 }}>
               <TouchableOpacity activeOpacity={0.8}>
                 <Image
                   source={require('../../../assets/enableSpeaker.png')}
@@ -358,7 +358,7 @@ class LiveStreamingScreen extends Component<Props, State> {
             <View style={styles.iconView}>
               <TouchableOpacity
                 activeOpacity={0.8}
-                style={{height: 40, width: 40}}
+                style={{ height: 40, width: 40 }}
                 onPress={() => this.enableDisableVideo()}>
                 <Image
                   source={
@@ -370,7 +370,7 @@ class LiveStreamingScreen extends Component<Props, State> {
                 />
               </TouchableOpacity>
             </View>
-            <View style={{height: 40, width: 40}}>
+            <View style={{ height: 40, width: 40 }}>
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => this.switch()}>
@@ -387,7 +387,7 @@ class LiveStreamingScreen extends Component<Props, State> {
   }
 
   _renderVideos = () => {
-    const {joinSucceed, peerIds} = this.state;
+    const { joinSucceed, peerIds } = this.state;
     const role = this.props.user.user.user.user_details.role_id;
 
     return joinSucceed ? (
@@ -403,18 +403,13 @@ class LiveStreamingScreen extends Component<Props, State> {
           style={styles.remoteContainer}
           keyExtractor={(index) => index.toString()}
           numColumns={2}
-          renderItem={({item}) => {
+          renderItem={({ item }) => {
             return (
               <View
-                style={{
-                  height: 85,
-                  width: 85,
-                  backgroundColor: '#81b840',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
+                style={styles.videoView}>
                 <RtcRemoteView.SurfaceView
                   style={styles.remote}
+                  // style={role != '3' ? styles.remote : styles.adminView}
                   uid={item}
                   channelId={this.state.channelName}
                   renderMode={VideoRenderMode.Hidden}
@@ -429,13 +424,7 @@ class LiveStreamingScreen extends Component<Props, State> {
                     paddingTop: 10,
                     paddingLeft: 5,
                   }}>
-                  <View
-                    style={{
-                      height: 5,
-                      width: 5,
-                      borderRadius: 100,
-                      backgroundColor: 'red',
-                    }}></View>
+                  <View style={styles.dot}></View>
                 </View>
               </View>
             );
@@ -459,6 +448,7 @@ const styles = StyleSheet.create({
   adminView: {
     width: 200,
     height: 250,
+    borderRadius: 100,
   },
   icon: {
     alignSelf: 'flex-end',
@@ -477,6 +467,13 @@ const styles = StyleSheet.create({
   remoteContainer: {
     flex: 1,
     position: 'absolute',
+  },
+  videoView: {
+    height: 85,
+    width: 85,
+    backgroundColor: '#81b840',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   remote: {
     width: 75,
@@ -535,9 +532,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#222',
   },
+  dot:{
+    height: 5,
+    width: 5,
+    borderRadius: 100,
+    backgroundColor: 'red',
+  }
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
   return {
     user: state,
   };

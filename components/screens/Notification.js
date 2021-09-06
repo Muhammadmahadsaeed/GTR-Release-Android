@@ -47,9 +47,8 @@ export default class Notification extends Component {
           ItemSeparatorComponent={() => {
             return <View style={styles.separator} />;
           }}
-          keyExtractor={(item) => {
-            return item.id.toString();
-          }}
+         
+          keyExtractor={(item, index) => index.toString()}
           renderItem={(item) => {
             const Notification = item.item;
             console.log(Notification.image)

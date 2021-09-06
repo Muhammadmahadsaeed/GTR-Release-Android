@@ -12,6 +12,7 @@ import NoInternetModal from '../../CommonComponents/NoInternetModal';
 
 
 class SplashScreen extends React.Component {
+  _isMounted = false;
   constructor() {
     super()
     this.state = {
@@ -20,11 +21,13 @@ class SplashScreen extends React.Component {
     }
   }
   componentDidMount() {
-    setTimeout(() => {
+    this._isMounted = true;
+    if (this._isMounted) {
+    // setTimeout(() => {
       this.netStatusListener()
     //   this.setTimePassed();
-    }, 1000);
-
+    // }, 1000);
+  }
   }
   checkUser = () => {
     this.setState({ loading: false })
@@ -52,6 +55,10 @@ class SplashScreen extends React.Component {
     this.setState({ noInternet: val});
     this.netStatusListener()
   };
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   render() {
     const { noInternet } = this.state

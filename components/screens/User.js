@@ -14,8 +14,8 @@ import {
   ImageBackground,
   Dimensions,
 } from 'react-native';
-
-class SignupScreen extends React.Component {
+import { connect } from 'react-redux';
+class UserUpdateScreen extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -80,6 +80,9 @@ class SignupScreen extends React.Component {
     }
   }
   render() {
+    const { user } = this.props
+    const userDetail = user.user.user.user_details
+    console.log(userDetail);
     return (
       <View style={{ flex: 1 }}>
         <Image
@@ -127,65 +130,42 @@ class SignupScreen extends React.Component {
               <Text style={styles.label}>Name</Text>
               <TextInput
                 style={styles.inputStyle}
-                placeholder="First Name"
+                value={userDetail.first_name}
                 placeholderTextColor="#81b840"
                 autoCapitalize="sentences"
                 returnKeyType="next"
               />
             </View>
-            {/* <View style={styles.SectionStyle}>
+            <View style={styles.SectionStyle}>
               <Text style={styles.label}>Last Name</Text>
               <TextInput
                 style={styles.inputStyle}
-                placeholder="Last Name"
+                value={userDetail.last_name}
                 placeholderTextColor="#81b840"
                 autoCapitalize="sentences"
                 returnKeyType="next"
               />
-            </View> */}
-            {/* <View style={styles.SectionStyle}>
+            </View>
+            <View style={styles.SectionStyle}>
               <Text style={styles.label}>Phone Number</Text>
               <TextInput
                 style={styles.inputStyle}
-                placeholder="Phone Number"
+                value={userDetail.phone_number}
                 placeholderTextColor="#81b840"
+                returnKeyType="next"
                 keyboardType="numeric"
               />
-            </View> */}
-
+            </View>
             <View style={styles.SectionStyle}>
               <Text style={styles.label}>Password</Text>
-              <View style={{flexDirection:'row'}}>
-                <TextInput
-                  style={styles.inputStyle}
-                  placeholder="Password"
-                  placeholderTextColor="#81b840"
-                  secureTextEntry={this.state.hidePassword}
-                  returnKeyType="next"
-                  onChangeText={(e) => this.setState({ password: e })}
-                />
-
-                <TouchableOpacity
-                  style={styles.touchableButton}
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    this.setPasswordVisibale();
-                  }}>
-                  <Image
-                    source={
-                      this.state.hidePassword
-                        ? require('../../assets/hide.png')
-                        : require('../../assets/view.png')
-                    }
-                    style={styles.buttonImage}
-                  />
-                </TouchableOpacity>
-              </View>
-
-
-
+              <TextInput
+                style={styles.inputStyle}
+                placeholder="Password"
+                secureTextEntry={true}
+                placeholderTextColor="#81b840"
+                autoCapitalize="sentences"
+              />
             </View>
-
             <TouchableOpacity
               style={[styles.buttonStyle, { marginTop: 10 }]}
               activeOpacity={0.5}
@@ -200,7 +180,6 @@ class SignupScreen extends React.Component {
     );
   }
 }
-export default SignupScreen;
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -300,7 +279,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   touchableButton: {
-    
+
     position: 'absolute',
     right: 3,
     height: 45,
@@ -321,3 +300,11 @@ const styles = StyleSheet.create({
     padding: 30,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    user: state,
+  };
+};
+
+export default connect(mapStateToProps, null)(UserUpdateScreen);

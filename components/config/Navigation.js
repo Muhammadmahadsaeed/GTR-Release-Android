@@ -247,7 +247,7 @@ const Shop_StackNavigator = createStackNavigator({
 //Stack Navigation for User Screen
 const User_StackNavigator = createStackNavigator({
   First: {
-    screen: MainScreen.User,
+    screen: MainScreen.UserUpdateScreen,
     navigationOptions: ({ navigation }) => ({
       headerRight: () => (
         <CommonComponents.HamBurger navigationProps={navigation} />
