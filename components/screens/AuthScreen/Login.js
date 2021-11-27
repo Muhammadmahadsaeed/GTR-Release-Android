@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 //Import all required component
 import {
@@ -13,11 +13,10 @@ import {
   ScrollView,
   ImageBackground,
   Dimensions,
-  ActivityIndicator,
+  ActivityIndicator, Platform
 } from 'react-native';
-import {connect} from 'react-redux';
-
-
+import { connect } from 'react-redux';
+import firebase from 'react-native-firebase';
 
 class LoginScreen extends React.Component {
   constructor() {
@@ -34,34 +33,45 @@ class LoginScreen extends React.Component {
       showEmailEmptyErorr: false,
       showPasswordEmptyErorr: false,
       erorrFromServer: '',
+      token: ''
     };
   }
 
+  componentDidMount = () => {
+
+    firebase.messaging().getToken().then((token) => {
+      this.setState({ token: token })
+    });
+
+    firebase.messaging().onTokenRefresh((token) => {
+      this.setState({ token: token })
+    });
+  }
   validate = (text) => {
     const userEmail = text.toLowerCase();
 
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(userEmail) === false) {
-      this.setState({correct: false});
-      this.setState({wrong: true});
-      this.setState({showEmailEmptyErorr: false});
+      this.setState({ correct: false });
+      this.setState({ wrong: true });
+      this.setState({ showEmailEmptyErorr: false });
       return false;
     } else {
-      this.setState({correct: true});
-      this.setState({wrong: false});
-      this.setState({showEmailEmptyErorr: false});
-      this.setState({email: userEmail});
+      this.setState({ correct: true });
+      this.setState({ wrong: false });
+      this.setState({ showEmailEmptyErorr: false });
+      this.setState({ email: userEmail });
     }
   };
   moveToSignup() {
     this.props.navigation.navigate('RegisterScreen');
   }
   setPasswordVisibale() {
-    this.setState({hidePassword: !this.state.hidePassword});
+    this.setState({ hidePassword: !this.state.hidePassword });
   }
   moveToHome() {
-    this.setState({isloading: true});
-    const {email, pwd} = this.state;
+    this.setState({ isloading: true });
+    const { email, pwd, token } = this.state;
 
     if (email === '' && pwd === '') {
       this.setState({
@@ -71,15 +81,16 @@ class LoginScreen extends React.Component {
         wrong: false,
       });
     } else if (email === '') {
-      this.setState({showEmailEmptyErorr: true, correct: false, wrong: false});
+      this.setState({ showEmailEmptyErorr: true, correct: false, wrong: false });
     } else if (pwd === '') {
-      this.setState({showPasswordEmptyErorr: true});
+      this.setState({ showPasswordEmptyErorr: true });
     } else {
       let formdata = new FormData();
 
       formdata.append('email', email.toLowerCase());
       formdata.append('password', pwd);
-      fetch('https://app.guessthatreceipt.com/api/login', {
+      formdata.append(' device_token', token)
+      fetch('http://app.guessthatreceipt.com/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -89,12 +100,12 @@ class LoginScreen extends React.Component {
         .then((response) => response.json())
         .then((data) => {
           if (data.status_code == 422) {
-            this.setState({isloading: false, showInvalidErorr: true});
+            this.setState({ isloading: false, showInvalidErorr: true });
           } else {
-            
+
             let checkUserOnline = new FormData();
             checkUserOnline.append('status', 'on');
-            fetch('https://app.guessthatreceipt.com/api/userOnOff', {
+            fetch('http://app.guessthatreceipt.com/api/userOnOff', {
               method: 'POST',
               headers: {
                 'Content-Type': 'multipart/form-data',
@@ -104,7 +115,7 @@ class LoginScreen extends React.Component {
             })
               .then((response) => response.json())
               .then((res) => {
-                
+
                 this.props.store_user(data.data);
                 this.props.navigation.navigate('Drawer');
               })
@@ -114,14 +125,14 @@ class LoginScreen extends React.Component {
           }
         })
         .catch((error) => {
-          this.setState({isloading: false, showInvalidErorr: true});
+          this.setState({ isloading: false, showInvalidErorr: true });
         });
     }
   }
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <Image
           style={styles.backgroundImage}
           source={require('../../../assets/bg.png')}
@@ -129,8 +140,8 @@ class LoginScreen extends React.Component {
         <ScrollView
           keyboardShouldPersistTaps="handled"
           contentInsetAdjustmentBehavior="automatic"
-          style={{flex: 1}}>
-          <View style={{alignItems: 'center', marginTop: 40}}>
+          style={{ flex: 1 }}>
+          <View style={{ alignItems: 'center', marginTop: 40 }}>
             <Image
               source={require('../../../assets/Logo.png')}
               style={{
@@ -145,7 +156,7 @@ class LoginScreen extends React.Component {
             {this.state.showInvalidErorr && (
               <View style={styles.showInvalidText}>
                 <Image
-                  style={{height: 40, width: 40}}
+                  style={{ height: 40, width: 40 }}
                   source={require('../../../assets/LargeInvalidIcon.png')}
                 />
                 <View
@@ -170,7 +181,7 @@ class LoginScreen extends React.Component {
                 </View>
               </View>
             )}
-            <View style={[styles.SectionStyle, {marginTop: 20}]}>
+            <View style={[styles.SectionStyle, { marginTop: 20 }]}>
               <TextInput
                 style={styles.inputStyle}
                 placeholder="Enter ID"
@@ -201,7 +212,7 @@ class LoginScreen extends React.Component {
                 )}
                 {this.state.showEmailEmptyErorr && (
                   <Image
-                    style={{height: 25, width: 25}}
+                    style={{ height: 25, width: 25 }}
                     source={require('../../../assets/invalidIcon.png')}
                   />
                 )}
@@ -214,7 +225,7 @@ class LoginScreen extends React.Component {
                 placeholderTextColor="#F6F6F7"
                 secureTextEntry={this.state.hidePassword}
                 returnKeyType="next"
-                onChangeText={(pwd) => this.setState({pwd: pwd})}
+                onChangeText={(pwd) => this.setState({ pwd: pwd })}
                 onFocus={() =>
                   this.setState({
                     isloading: false,
@@ -227,7 +238,7 @@ class LoginScreen extends React.Component {
               <View style={[styles.touchableButton]}>
                 {this.state.showPasswordEmptyErorr ? (
                   <Image
-                    style={{height: 25, width: 25}}
+                    style={{ height: 25, width: 25 }}
                     source={require('../../../assets/invalidIcon.png')}
                   />
                 ) : (
@@ -265,7 +276,7 @@ class LoginScreen extends React.Component {
               }}>
               <Image
                 source={require('../../../assets/lockIcon.png')}
-                style={{height: 17, width: 13, resizeMode: 'cover'}}
+                style={{ height: 17, width: 13, resizeMode: 'cover' }}
               />
               <Text
                 style={{
@@ -280,7 +291,7 @@ class LoginScreen extends React.Component {
               onPress={() => {
                 this.moveToHome();
               }}
-              style={[styles.buttonStyle, {marginTop: 50}]}
+              style={[styles.buttonStyle, { marginTop: 50 }]}
               activeOpacity={0.5}>
               {this.state.isloading ? (
                 <ActivityIndicator size="large" color="#81b840" />
@@ -297,7 +308,7 @@ class LoginScreen extends React.Component {
               <Text
                 style={[
                   styles.buttonTextStyle,
-                  {paddingTop: 25, color: 'white'},
+                  { paddingTop: 25, color: 'white' },
                 ]}>
                 Sign up
               </Text>
@@ -423,7 +434,7 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    store_user: (user) => dispatch({type: 'SET_USER', payload: user}),
+    store_user: (user) => dispatch({ type: 'SET_USER', payload: user }),
   };
 };
 

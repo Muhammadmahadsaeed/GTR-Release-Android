@@ -41,7 +41,7 @@ class CustomSidebarMenu extends Component {
     
     let formdata = new FormData();
     formdata.append('status', 'off');
-    fetch('https://app.guessthatreceipt.com/api/userOnOff', {
+    fetch('http://app.guessthatreceipt.com/api/userOnOff', {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -68,7 +68,7 @@ class CustomSidebarMenu extends Component {
         <View style={styles.sideMenuProfile}>
           <Image
             source={{
-              uri: `https://app.guessthatreceipt.com/storage/${user.avatar}`,
+              uri: `http://app.guessthatreceipt.com/storage/${user.avatar}`,
             }}
             style={styles.sideMenuProfileIcon}
           />

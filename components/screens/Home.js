@@ -47,7 +47,7 @@ class Home extends Component {
   }
   getWinner = async () => {
     await fetch(
-      'https://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
+      'http://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
       {
         method: 'GET',
         headers: {
@@ -66,7 +66,7 @@ class Home extends Component {
   }
 
   async getPackage() {
-    await fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
+    await fetch('http://app.guessthatreceipt.com/api/getUserCurrentPackage', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -134,7 +134,7 @@ class Home extends Component {
     const role = this.props.user.user.user.user_details.role_id
     // if (role != "3") {
     //   this.setState({ pkgLoading: true })
-    //   fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
+    //   fetch('http://app.guessthatreceipt.com/api/getUserCurrentPackage', {
     //     method: 'POST',
     //     headers: {
     //       Authorization: `Bearer ${this.props.user.user.user.access_token}`,

@@ -119,7 +119,7 @@ class ChooseImage extends Component {
     const params = new URLSearchParams();
     params.append('avatar', `data:${this.state.fileType};base64,${this.state.fileData}`);
 
-    fetch('https://app.guessthatreceipt.com/api/users/update', {
+    fetch('http://app.guessthatreceipt.com/api/users/update', {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${this.props.user.user.access_token}`,
@@ -136,7 +136,7 @@ class ChooseImage extends Component {
           this.props.user.user.user_details.email.toLowerCase(),
         );
         formdata.append('password', pwd);
-        fetch('https://app.guessthatreceipt.com/api/login', {
+        fetch('http://app.guessthatreceipt.com/api/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',

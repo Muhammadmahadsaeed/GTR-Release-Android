@@ -46,7 +46,7 @@ class Premium extends Component {
 
   getPackages = async () => {
     await fetch(
-      'https://app.guessthatreceipt.com/api/subscriptions?type=premium',
+      'http://app.guessthatreceipt.com/api/subscriptions?type=premium',
       {
         method: 'GET',
         headers: {
@@ -71,7 +71,7 @@ class Premium extends Component {
     if (data.title === 'success') {
       formdata.append('pack_id', this.state.package.id);
       formdata.append('transaction_id', paymentId);
-      fetch('https://app.guessthatreceipt.com/api/saveOrder', {
+      fetch('http://app.guessthatreceipt.com/api/saveOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -102,7 +102,7 @@ class Premium extends Component {
       this.setState({ isPackageLoading: true })
       formdata.append('pack_id', item.id);
       formdata.append('transaction_id', item.description);
-      fetch('https://app.guessthatreceipt.com/api/saveOrder', {
+      fetch('http://app.guessthatreceipt.com/api/saveOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',

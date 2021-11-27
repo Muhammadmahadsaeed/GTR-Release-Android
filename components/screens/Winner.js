@@ -21,7 +21,7 @@ class Winner extends Component {
   // }
   componentDidMount() {
     fetch(
-      'https://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
+      'http://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
       {
         method: 'GET',
         headers: {
@@ -45,7 +45,7 @@ class Winner extends Component {
       <View style={styles.row}>
         <Image
           source={{
-            uri: `https://app.guessthatreceipt.com/storage/${item.user.avatar}`,
+            uri: `http://app.guessthatreceipt.com/storage/${item.user.avatar}`,
           }}
           style={styles.pic}
         />

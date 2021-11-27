@@ -56,7 +56,7 @@ class DailyChallengesScreen extends React.Component {
   }
 
   getSchedule = async () => {
-    await fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
+    await fetch('http://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -95,7 +95,7 @@ class DailyChallengesScreen extends React.Component {
         this.setState({ isloading: false });
         const params = new URLSearchParams();
         params.append('schedule_id', `${res.data.id}`);
-        fetch('https://app.guessthatreceipt.com/api/gameLiveEntry', {
+        fetch('http://app.guessthatreceipt.com/api/gameLiveEntry', {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${this.props.user.user.user.access_token}`,

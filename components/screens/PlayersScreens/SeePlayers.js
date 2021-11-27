@@ -21,7 +21,7 @@ class SeePlayers extends Component {
   // }
   componentDidMount() {
     fetch(
-      'https://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
+      'http://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
       {
         method: 'GET',
         headers: {
@@ -45,7 +45,7 @@ class SeePlayers extends Component {
       <View style={styles.row}>
         <Image
           source={{
-            uri: `https://app.guessthatreceipt.com/storage/${item.user.avatar}`,
+            uri: `http://app.guessthatreceipt.com/storage/${item.user.avatar}`,
           }}
           style={styles.pic}
         />
@@ -93,7 +93,7 @@ class SeePlayers extends Component {
       return reward;
     });
  
-    fetch('https://app.guessthatreceipt.com/api/saveRewardsAdmin', {
+    fetch('http://app.guessthatreceipt.com/api/saveRewardsAdmin', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

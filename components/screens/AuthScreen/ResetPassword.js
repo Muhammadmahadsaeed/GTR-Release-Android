@@ -48,7 +48,7 @@ class ResetPassword extends React.Component {
       this.setState({cPwdErorr: true});
     } else {
       fetch(
-        `https://app.guessthatreceipt.com/api/updatePassword?code=${code}&password=${password}`,
+        `http://app.guessthatreceipt.com/api/updatePassword?code=${code}&password=${password}`,
         {
           method: 'GET',
         },

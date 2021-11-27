@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-navigation';
 import {connect} from 'react-redux';
-
+import firebase from 'react-native-firebase';
 
 class SignupScreen extends React.Component {
   constructor() {
@@ -44,6 +44,16 @@ class SignupScreen extends React.Component {
       cPwdErorr: false,
       showErorr: '',
     };
+  }
+  componentDidMount = () => {
+
+    firebase.messaging().getToken().then((token) => {
+      this.setState({ token: token })
+    });
+
+    firebase.messaging().onTokenRefresh((token) => {
+      this.setState({ token: token })
+    });
   }
   validate = (text) => {
     const userEmail = text.toLowerCase();
@@ -133,7 +143,7 @@ class SignupScreen extends React.Component {
       formdata.append('email', email.toLowerCase());
       formdata.append('password', password);
       formdata.append('password_confirmation', confirmPassword);
-      fetch('https://app.guessthatreceipt.com/api/user-register', {
+      fetch('http://app.guessthatreceipt.com/api/user-register', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -153,7 +163,7 @@ class SignupScreen extends React.Component {
             let loginData = new FormData();
             loginData.append('email', email.toLowerCase());
             loginData.append('password', password);
-            fetch('https://app.guessthatreceipt.com/api/login', {
+            fetch('http://app.guessthatreceipt.com/api/login', {
               method: 'POST',
               headers: {
                 'Content-Type': 'multipart/form-data',

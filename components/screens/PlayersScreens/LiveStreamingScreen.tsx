@@ -98,7 +98,7 @@ class LiveStreamingScreen extends Component<Props, State> {
   }
 
   getSchedule() {
-    fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
+    fetch('http://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -174,7 +174,7 @@ class LiveStreamingScreen extends Component<Props, State> {
       const params = new URLSearchParams();
       params.append('schedule_id', schedule.id);
       params.append('status', 'expired');
-      fetch('https://app.guessthatreceipt.com/api/updateGameSchedule', {
+      fetch('http://app.guessthatreceipt.com/api/updateGameSchedule', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -220,7 +220,7 @@ class LiveStreamingScreen extends Component<Props, State> {
   }
 
   moveToAnswer = async () => {
-    await fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
+    await fetch('http://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -248,7 +248,7 @@ class LiveStreamingScreen extends Component<Props, State> {
     // const params = new URLSearchParams();
     // params.append('schedule_id', '');
     // params.append('status', '');
-    // fetch('https://app.guessthatreceipt.com/api/updateGameSchedule', {
+    // fetch('http://app.guessthatreceipt.com/api/updateGameSchedule', {
     //   method: 'POST',
     //   headers: {
     //     Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -270,7 +270,7 @@ class LiveStreamingScreen extends Component<Props, State> {
     //   });
   }
   getJoinedUsers() {
-    fetch('https://app.guessthatreceipt.com/api/gameUsers', {
+    fetch('http://app.guessthatreceipt.com/api/gameUsers', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,

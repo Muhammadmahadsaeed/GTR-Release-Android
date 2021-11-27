@@ -29,7 +29,7 @@ class ForgotPassword extends React.Component {
   moveToResetPassword() {
     this.setState({isloading: true});
     fetch(
-      `https://app.guessthatreceipt.com/api/forgetPassword?email=${this.state.email}`,
+      `http://app.guessthatreceipt.com/api/forgetPassword?email=${this.state.email}`,
       {
         method: 'GET',
       },
