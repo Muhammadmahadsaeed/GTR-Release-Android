@@ -21,8 +21,8 @@ class Home extends Component {
     super();
     this.state = {
       flashMessage: false,
-      data: '',
-      winner: '',
+      data: [],
+      winner: [],
       isLoading: true,
       pkgLoading: false
     };
@@ -32,21 +32,22 @@ class Home extends Component {
     // this.checkPermission();
     // this.createChannel();
     // this.notificationListener();
+    this.getWinner()
+    if (this.props.user.user.user.user_details.role_id != "3") {
+      this.getPackage();
+    }
     const { navigation } = this.props;
     this.focusListener = navigation.addListener("didFocus", () => {
       LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-      this.getWinner()
-      if (this.props.user.user.user.user_details.role_id != "3") {
-        this.getPackage();
-      }
     });
   }
   componentWillUnmount() {
     // Remove the event listener
     this.focusListener.remove();
   }
-  getWinner = async () => {
-    await fetch(
+  getWinner = () => {
+    console.log("call=======",this.props.user.user.user.access_token);
+    fetch(
       'http://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
       {
         method: 'GET',
@@ -61,12 +62,13 @@ class Home extends Component {
       })
       .catch((err) => {
         this.setState({ isLoading: false })
-        console.log(err);
+        console.log("err====",err);
       });
   }
 
-  async getPackage() {
-    await fetch('http://app.guessthatreceipt.com/api/getUserCurrentPackage', {
+  getPackage = () => {
+    let arr = []
+    fetch('http://app.guessthatreceipt.com/api/getUserCurrentPackage', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -75,9 +77,16 @@ class Home extends Component {
     })
       .then((response) => response.json())
       .then((result) => {
-        this.setState({ data: result.data, isLoading: false });
+        if(result.data != 'Unauthenticated.'){
+          arr.push(result.data)
+        }
+        console.log(arr);
+        this.setState({ data: arr, isLoading: false });
       })
-      .catch((error) => this.setState({ isLoading: false }));
+      .catch((err) => {
+        this.setState({ isLoading: false })
+        console.log("pak===",err);
+      });
   }
 
   // async getToken() {
@@ -150,7 +159,7 @@ class Home extends Component {
     //         });
     //       }
     //       else {
-            this.props.navigation.navigate('DailyChallenges');
+    this.props.navigation.navigate('DailyChallenges');
     //       }
     //     })
     //     .catch((error) => console.log('error', error));
@@ -178,12 +187,15 @@ class Home extends Component {
     const { data, winner, isLoading, pkgLoading } = this.state
     const role = this.props.user.user.user.user_details.role_id
     return (
-      <SafeAreaView style={styles.MainContainer} forceInset={{ top: 'always' }}>
-        {isLoading ?
+      <SafeAreaView
+        style={styles.MainContainer}
+        forceInset={{ top: 'always' }}>
+        {!!!winner.length && isLoading &&
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <ActivityIndicator size={60} color="#81b840" />
           </View>
-          :
+        }
+        {!!winner.length && !isLoading &&
           <View style={{ flex: 1 }}>
             <ScrollView style={[styles.body, { flex: 1 }]}>
               <View style={styles.challengeView}>
@@ -331,18 +343,20 @@ class Home extends Component {
                     <View style={[styles.payItBigBox, { padding: 10 }]}>
                       <View style={styles.notificationBox}>
                         <View style={{ flex: 1, justifyContent: 'center' }}>
-                          <Text style={styles.month}>{data != 'Unauthenticated.' && data.exp_status.toUpperCase()}</Text>
+                          <Text style={styles.month}>
+                            {data[0]?.exp_status.toUpperCase()}
+                            </Text>
                           <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                             <Text style={styles.rupee}>
-                              {data != 'Unauthenticated.' && data.amount}
+                              {data[0]?.amount}
                             </Text>
                             <Text numberOfLines={1} style={[styles.month, { alignSelf: 'flex-end', marginLeft: 5, flex: 1 }]}>
-                              {data != 'Unauthenticated.' && data.subscription.description.toUpperCase()}
+                              {data[0]?.subscription.description.toUpperCase()}
                             </Text>
                           </View>
 
                           <Text style={styles.description}>
-                            {data != 'Unauthenticated.' && `Exp: ${moment(data.exp_date).format('ll')}`}
+                            {`Exp: ${moment(data[0]?.exp_date).format('ll')}`}
                           </Text>
 
                         </View>
@@ -374,7 +388,6 @@ class Home extends Component {
             ) : null}
           </View>
         }
-        {/* <IAPPurchaseListener /> */}
       </SafeAreaView>
     );
   }

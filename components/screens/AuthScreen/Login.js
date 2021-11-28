@@ -39,13 +39,6 @@ class LoginScreen extends React.Component {
 
   componentDidMount = () => {
 
-    firebase.messaging().getToken().then((token) => {
-      this.setState({ token: token })
-    });
-
-    firebase.messaging().onTokenRefresh((token) => {
-      this.setState({ token: token })
-    });
   }
   validate = (text) => {
     const userEmail = text.toLowerCase();
