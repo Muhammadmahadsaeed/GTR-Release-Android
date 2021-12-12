@@ -29,9 +29,6 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    // this.checkPermission();
-    // this.createChannel();
-    // this.notificationListener();
     this.getWinner()
     if (this.props.user.user.user.user_details.role_id != "3") {
       this.getPackage();
@@ -46,7 +43,6 @@ class Home extends Component {
     this.focusListener.remove();
   }
   getWinner = () => {
-    console.log("call=======",this.props.user.user.user.access_token);
     fetch(
       'http://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
       {
@@ -80,7 +76,7 @@ class Home extends Component {
         if(result.data != 'Unauthenticated.'){
           arr.push(result.data)
         }
-        console.log(arr);
+        
         this.setState({ data: arr, isLoading: false });
       })
       .catch((err) => {
@@ -195,7 +191,7 @@ class Home extends Component {
             <ActivityIndicator size={60} color="#81b840" />
           </View>
         }
-        {!!winner.length && !isLoading &&
+        {!!winner.length || !!data.length && !isLoading &&
           <View style={{ flex: 1 }}>
             <ScrollView style={[styles.body, { flex: 1 }]}>
               <View style={styles.challengeView}>

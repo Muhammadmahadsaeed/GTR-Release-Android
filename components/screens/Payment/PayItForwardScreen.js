@@ -250,7 +250,7 @@ class PayItForwardScreen extends Component {
           <WebView
             style={{ flex: 1 }}
             source={{
-              uri: `http://pombopaypal.guessthatreceipt.com/paypal/${this.state.amount}`,
+              uri: `http://app.guessthatreceipt.com/paypal/${this.state.amount}`,
             }}
             originWhitelist={['*']}
             onNavigationStateChange={(data) => this.handleResponse(data)}

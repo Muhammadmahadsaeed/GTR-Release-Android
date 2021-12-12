@@ -16,7 +16,6 @@ import {
   ActivityIndicator, Platform
 } from 'react-native';
 import { connect } from 'react-redux';
-import firebase from 'react-native-firebase';
 
 class LoginScreen extends React.Component {
   constructor() {

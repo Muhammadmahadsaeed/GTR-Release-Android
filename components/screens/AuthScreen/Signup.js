@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-navigation';
 import {connect} from 'react-redux';
-import firebase from 'react-native-firebase';
+import messaging from '@react-native-firebase/messaging';
 
 class SignupScreen extends React.Component {
   constructor() {
@@ -47,11 +47,11 @@ class SignupScreen extends React.Component {
   }
   componentDidMount = () => {
 
-    firebase.messaging().getToken().then((token) => {
+    messaging().getToken().then((token) => {
       this.setState({ token: token })
     });
 
-    firebase.messaging().onTokenRefresh((token) => {
+    messaging().onTokenRefresh((token) => {
       this.setState({ token: token })
     });
   }
