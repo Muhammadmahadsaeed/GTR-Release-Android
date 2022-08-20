@@ -143,7 +143,7 @@ class SignupScreen extends React.Component {
       formdata.append('email', email.toLowerCase());
       formdata.append('password', password);
       formdata.append('password_confirmation', confirmPassword);
-      fetch('http://app.guessthatreceipt.com/api/user-register', {
+      fetch('https://app.guessthatreceipt.com/api/user-register', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -163,7 +163,7 @@ class SignupScreen extends React.Component {
             let loginData = new FormData();
             loginData.append('email', email.toLowerCase());
             loginData.append('password', password);
-            fetch('http://app.guessthatreceipt.com/api/login', {
+            fetch('https://app.guessthatreceipt.com/api/login', {
               method: 'POST',
               headers: {
                 'Content-Type': 'multipart/form-data',

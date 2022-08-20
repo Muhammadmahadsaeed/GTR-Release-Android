@@ -48,7 +48,7 @@ class PayItForwardScreen extends Component {
   }
 
   getPackages = async () => {
-    await fetch('http://app.guessthatreceipt.com/api/subscriptions?type=forward', {
+    await fetch('https://app.guessthatreceipt.com/api/subscriptions?type=forward', {
       method: 'GET',
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -71,7 +71,7 @@ class PayItForwardScreen extends Component {
     if (data.title === 'success') {
       formdata.append('pack_id', this.state.package.id);
       formdata.append('transaction_id', paymentId);
-      fetch('http://app.guessthatreceipt.com/api/saveOrder', {
+      fetch('https://app.guessthatreceipt.com/api/saveOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -250,7 +250,7 @@ class PayItForwardScreen extends Component {
           <WebView
             style={{ flex: 1 }}
             source={{
-              uri: `http://app.guessthatreceipt.com/paypal/${this.state.amount}`,
+              uri: `http://paypal.guessthatreceipt.com/paypal/${this.state.amount}`,
             }}
             originWhitelist={['*']}
             onNavigationStateChange={(data) => this.handleResponse(data)}

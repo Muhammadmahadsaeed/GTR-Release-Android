@@ -45,7 +45,7 @@ class AnswerScreen extends Component {
       const schedule = this.props.navigation.getParam('schedule');
       formData.append('answer', this.state.answer);
       formData.append('schedule_id', schedule.data.id);
-      fetch('http://app.guessthatreceipt.com/api/gameSaveAnswer', {
+      fetch('https://app.guessthatreceipt.com/api/gameSaveAnswer', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -55,7 +55,7 @@ class AnswerScreen extends Component {
       })
         .then((result) => result.json())
         .then((res) => {
-          fetch('http://app.guessthatreceipt.com/api/getSingleUserRewards', {
+          fetch('https://app.guessthatreceipt.com/api/getSingleUserRewards', {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${this.props.user.user.user.access_token}`,

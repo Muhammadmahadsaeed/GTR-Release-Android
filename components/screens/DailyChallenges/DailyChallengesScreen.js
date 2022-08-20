@@ -56,7 +56,7 @@ class DailyChallengesScreen extends React.Component {
   }
 
   getSchedule = async () => {
-    await fetch('http://app.guessthatreceipt.com/api/getGameSchedule', {
+    await fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -64,7 +64,7 @@ class DailyChallengesScreen extends React.Component {
     })
       .then((result) => result.json())
       .then((res) => {
-        this.setState({ scheduleArray: res });
+        this.setState({ scheduleArray: res.data });
       })
       .catch((err) => {
         console.log(err);
@@ -73,7 +73,7 @@ class DailyChallengesScreen extends React.Component {
 
   sendInivitaion() {
     fetch(
-      'http://pombopaypal.guessthatreceipt.com/api/notification/sendToAll',
+      'http://paypal.guessthatreceipt.com/api/notification/sendToAll',
       {
         method: 'POST',
       },
@@ -90,12 +90,12 @@ class DailyChallengesScreen extends React.Component {
   moveToHostOrAudienceScreen() {
     const res = this.state.scheduleArray;
     this.setState({ isloading: true });
-    if (this.state.hasPermission) {
-      if (res.data.is_expired === 'active') {
+    // if (this.state.hasPermission) {
+      // if (res.is_expired === 'active') {
         this.setState({ isloading: false });
         const params = new URLSearchParams();
-        params.append('schedule_id', `${res.data.id}`);
-        fetch('http://app.guessthatreceipt.com/api/gameLiveEntry', {
+        params.append('schedule_id', `${res.id}`);
+        fetch('https://app.guessthatreceipt.com/api/gameLiveEntry', {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -116,15 +116,15 @@ class DailyChallengesScreen extends React.Component {
             }
           })
           .catch((error) => console.log('error', error));
-      } else {
-        this.setState({ isloading: false, flashMessage: true }, () => {
-          setTimeout(() => this.closeFlashMessage(), 3000);
-        });
-      }
-    }
-    else {
-      this.setState({ isloading: false, modalVisible: true })
-    }
+      // } else {
+      //   this.setState({ isloading: false, flashMessage: true }, () => {
+      //     setTimeout(() => this.closeFlashMessage(), 3000);
+      //   });
+      // }
+    // }
+    // else {
+    //   this.setState({ isloading: false, modalVisible: true })
+    // }
   }
 
   closeFlashMessage() {

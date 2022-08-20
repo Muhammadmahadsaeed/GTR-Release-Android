@@ -59,7 +59,7 @@ const HistoryList = ({ isPermission, data }) => {
     }
 
     const onDownload = async (id) => {
-        let url = `http://app.guessthatreceipt.com/generate-pdf?order_id=${id}`
+        let url = `https://app.guessthatreceipt.com/generate-pdf?order_id=${id}`
         try {
             if (hasPermission) {
                 setIsDownloading(true)

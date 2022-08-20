@@ -82,7 +82,7 @@ class LoginScreen extends React.Component {
       formdata.append('email', email.toLowerCase());
       formdata.append('password', pwd);
       formdata.append(' device_token', token)
-      fetch('http://app.guessthatreceipt.com/api/login', {
+      fetch('https://app.guessthatreceipt.com/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -97,7 +97,7 @@ class LoginScreen extends React.Component {
 
             let checkUserOnline = new FormData();
             checkUserOnline.append('status', 'on');
-            fetch('http://app.guessthatreceipt.com/api/userOnOff', {
+            fetch('https://app.guessthatreceipt.com/api/userOnOff', {
               method: 'POST',
               headers: {
                 'Content-Type': 'multipart/form-data',

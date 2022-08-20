@@ -44,7 +44,7 @@ class Home extends Component {
   }
   getWinner = () => {
     fetch(
-      'http://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
+      'https://app.guessthatreceipt.com/api/gameAnwerList?reward=reward&status=expired',
       {
         method: 'GET',
         headers: {
@@ -54,6 +54,7 @@ class Home extends Component {
     )
       .then((res) => res.json())
       .then((result) => {
+        
         this.setState({ winner: result.data, isLoading: false });
       })
       .catch((err) => {
@@ -64,7 +65,7 @@ class Home extends Component {
 
   getPackage = () => {
     let arr = []
-    fetch('http://app.guessthatreceipt.com/api/getUserCurrentPackage', {
+    fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -139,7 +140,7 @@ class Home extends Component {
     const role = this.props.user.user.user.user_details.role_id
     // if (role != "3") {
     //   this.setState({ pkgLoading: true })
-    //   fetch('http://app.guessthatreceipt.com/api/getUserCurrentPackage', {
+    //   fetch('https://app.guessthatreceipt.com/api/getUserCurrentPackage', {
     //     method: 'POST',
     //     headers: {
     //       Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -182,16 +183,17 @@ class Home extends Component {
   render() {
     const { data, winner, isLoading, pkgLoading } = this.state
     const role = this.props.user.user.user.user_details.role_id
+
     return (
       <SafeAreaView
         style={styles.MainContainer}
         forceInset={{ top: 'always' }}>
-        {!!!winner.length && isLoading &&
+        {/* {!!!winner.length && isLoading &&
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <ActivityIndicator size={60} color="#81b840" />
           </View>
         }
-        {!!winner.length || !!data.length && !isLoading &&
+        {!!winner.length || !!data.length && !isLoading && */}
           <View style={{ flex: 1 }}>
             <ScrollView style={[styles.body, { flex: 1 }]}>
               <View style={styles.challengeView}>
@@ -383,7 +385,7 @@ class Home extends Component {
               </View>
             ) : null}
           </View>
-        }
+        {/* } */}
       </SafeAreaView>
     );
   }

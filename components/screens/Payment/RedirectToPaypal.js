@@ -27,7 +27,7 @@ export default class RedirectToPaypal extends React.Component {
           visible={this.state.showModal}
           onRequestClose={() => this.setState({showModal: false})}>
           <WebView
-            source={{uri: 'http://app.guessthatreceipt.com/pay'}}
+            source={{uri: 'https://app.guessthatreceipt.com/pay'}}
             onNavigationStateChange={(data) => this.handleResponse(data)}
             injectedJavaScript={`document.f1.submit()`}
           />

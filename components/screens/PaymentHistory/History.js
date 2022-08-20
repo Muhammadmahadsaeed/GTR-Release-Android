@@ -36,20 +36,20 @@ const History = () => {
   };
 
   const getPackage = () => {
-    fetch('http://app.guessthatreceipt.com/api/get-orders', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        setData(result.data)
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // fetch('https://app.guessthatreceipt.com/api/get-orders', {
+    //   method: 'GET',
+    //   headers: {
+    //     Authorization: `Bearer ${access_token}`,
+    //     'Content-Type': 'application/json',
+    //   },
+    // })
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     setData(result.data)
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   }
 
 

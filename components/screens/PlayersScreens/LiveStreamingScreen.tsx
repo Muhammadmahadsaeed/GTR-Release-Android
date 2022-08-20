@@ -76,7 +76,7 @@ class LiveStreamingScreen extends Component<Props, State> {
   }
 
   getToken() {
-    fetch('http://pombopaypal.guessthatreceipt.com/api/DemoServer/rtcToken?channelName=GTR', {
+    fetch('http://paypal.guessthatreceipt.com/api/DemoServer/rtcToken?channelName=GTR', {
       method: 'GET',
     })
     .then((res) => res.json())
@@ -98,7 +98,7 @@ class LiveStreamingScreen extends Component<Props, State> {
   }
 
   getSchedule() {
-    fetch('http://app.guessthatreceipt.com/api/getGameSchedule', {
+    fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -174,7 +174,7 @@ class LiveStreamingScreen extends Component<Props, State> {
       const params = new URLSearchParams();
       params.append('schedule_id', schedule.id);
       params.append('status', 'expired');
-      fetch('http://app.guessthatreceipt.com/api/updateGameSchedule', {
+      fetch('https://app.guessthatreceipt.com/api/updateGameSchedule', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -220,7 +220,7 @@ class LiveStreamingScreen extends Component<Props, State> {
   }
 
   moveToAnswer = async () => {
-    await fetch('http://app.guessthatreceipt.com/api/getGameSchedule', {
+    await fetch('https://app.guessthatreceipt.com/api/getGameSchedule', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -248,7 +248,7 @@ class LiveStreamingScreen extends Component<Props, State> {
     // const params = new URLSearchParams();
     // params.append('schedule_id', '');
     // params.append('status', '');
-    // fetch('http://app.guessthatreceipt.com/api/updateGameSchedule', {
+    // fetch('https://app.guessthatreceipt.com/api/updateGameSchedule', {
     //   method: 'POST',
     //   headers: {
     //     Authorization: `Bearer ${this.props.user.user.user.access_token}`,
@@ -270,7 +270,7 @@ class LiveStreamingScreen extends Component<Props, State> {
     //   });
   }
   getJoinedUsers() {
-    fetch('http://app.guessthatreceipt.com/api/gameUsers', {
+    fetch('https://app.guessthatreceipt.com/api/gameUsers', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.props.user.user.user.access_token}`,
